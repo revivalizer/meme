@@ -43,10 +43,20 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
+    <Reference Include="xunit">
+      <HintPath>packages\xunit.1.9.2\lib\net20\xunit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ErrorHandling.fs" />
+    <Compile Include="ErrorHandlingExtensions.fs" />
+    <Compile Include="ParserTypes.fs" />
+    <Compile Include="ParserLogic.fs" />
+    <Compile Include="ParserTests.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="libs\fparsec\Build\VS11\FParsec.fsproj">
