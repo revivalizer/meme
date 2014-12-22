@@ -10,7 +10,7 @@ let str_ws s = pstring s .>> ws
 
 let numberLiteral = getPosition .>>. pfloat .>> ws |>> Number
 
-(*let ident =
+let ident =
     let isAsciiIdStart c =
         isAsciiLetter c || c = '_'
 
@@ -32,18 +32,17 @@ let stringLiteral =
                      | 't' -> '\t'
                      | c   -> c
     let escapedChar = pstring "\\" >>. (anyOf "\\nrt\"" |>> unescape)
-    getPosition .>>. between (pstring "\"") (pstring "\"")
+    getPosition .>>. between (pstring "\"") (pstring "\"" .>> ws)
             (manyChars (normalChar <|> escapedChar)) |>> String
 
 let atom = numberLiteral <|> symbol <|> stringLiteral
 let list = getPosition .>> str_ws "(" .>>. (many expr) .>> str_ws ")" |>> List
 do exprImpl := atom <|> list
 
-
-let parse p (str : string) =
+let parse p str =
     match run p str with
     | ParserResult.Success(result, _, _)   -> Success(result)
     | ParserResult.Failure(errorMsg, _, _) -> Failure(errorMsg)
 
-//.parse expr "1+2"
-*)
+// This line is necceasry to compile without value restriction errors!
+let expr_parse = parse expr
