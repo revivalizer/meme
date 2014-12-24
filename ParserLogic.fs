@@ -12,7 +12,7 @@ let numberLiteral = getPosition .>>. pfloat .>> ws |>> Number
 
 let ident =
     let isAsciiIdStart c =
-        isAsciiLetter c || c = '_'
+        isAsciiLetter c || c = '_' || c = '*'
 
     let isAsciiIdContinue c =
         isAsciiLetter c || isDigit c || c = '_'

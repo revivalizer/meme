@@ -18,3 +18,4 @@ let ``Simple expression parser`` () =
     AssertParseSuccess numberLiteral "1"
     AssertParseSuccess numberLiteral "1 "
     AssertParseSuccess stringLiteral "\"1\" "
+    AssertParseSuccess expr "(* 5 9)"
