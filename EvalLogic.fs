@@ -12,7 +12,7 @@ type EvalExpr = Number   of float
               | Symbol   of string
               | List     of (EvalExpr list)
               | Function of (EvalExpr list -> EvalExpr)
-              | Special  of (Map<string, EvalExpr> list -> EvalExpr list -> EvalExpr)
+              | Special  of (Position -> Map<string, EvalExpr> list -> EvalExpr list -> EvalExpr)
 
 type ExprPosMap() =
     inherit Dictionary<EvalExpr, Position>(HashIdentity.Reference)
@@ -59,18 +59,18 @@ let eval expr =
         | List(h :: t) ->
             match eval env h with
             | Function(f) -> apply f env t
-            | Special(s) -> s env t
+            | Special(s) -> s (pos h) env t
             | o -> failwith (sprintf "Malformed expression at %A" (pos o))
         | _ -> failwith "Malformed expression."
     and apply fn env args = fn (List.map (eval env) args)
-    and if' env args = 
+    and if' pos env args = 
         match args with
         | [condition;t;f] -> match eval env condition with
                              | Number(0.0) -> eval env f
                              | String("")  -> eval env f
                              | List([])    -> eval env f
                              | _           -> eval env t
-        | _ -> failwith "Malformed if expression at "
+        | _ -> failwith (sprintf "Malformed if expression at %A" pos)
 
     and globalenvironment = 
         [ Map.ofList [ 
