@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "scheme01", "scheme01.fsproj", "{91371E03-909B-4969-9730-F9F233290F08}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "meme", "meme.fsproj", "{91371E03-909B-4969-9730-F9F233290F08}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FParsec", "libs\fparsec\Build\VS11\FParsec.fsproj", "{8EA340D3-E9E0-477E-9AC3-FBFDF3BAD41E}"
 EndProject
