@@ -27,6 +27,9 @@ let eval expr =
        posMap.[o] 
 
     // Convert parse types to eval types
+    (* You could debate wether it's neccesary to split into parse and eval types.
+       I didn't like that Special and Function had to be part of parser types, because
+       they don't come out of the parsing stage. *)
     let GenEvalExpr parseexpr = 
         let AddToPosMap expr pos =
             posMap.Add(expr, pos)
@@ -38,16 +41,19 @@ let eval expr =
             | Expr.Symbol(pos, v) -> AddToPosMap (EvalExpr.Symbol(v)) pos
             | Expr.List(pos, v)   -> AddToPosMap (EvalExpr.List(v |> List.map convert)) pos
         convert parseexpr
-        
-    let Multiply args =
-        let product acc = function
-            Number(b) -> acc * b
-            | o -> failwith (sprintf "Malformed multiplication argument at %A" (pos o))
-        Number (List.fold product 1.0 args)
+    
+    let NumericBinaryOp f args =
+        let binop a b =
+            match a,b with
+            | Number(a),Number(b) -> Number(f a b)
+            | Number(a),b         -> failwith (sprintf "Malformed multiplication argument at %A" (pos b))
+            | a,b                 -> failwith (sprintf "Malformed multiplication argument at %A" (pos a))
+        List.reduce binop args
 
     let environment = 
         Map.ofList [ 
-            "*", Function(Multiply) 
+            "*", Function(NumericBinaryOp (*));
+            "-", Function(NumericBinaryOp (-));
             ]
 
     let rec eval (expression : EvalExpr) =
