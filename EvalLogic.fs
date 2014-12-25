@@ -12,7 +12,7 @@ type EvalExpr = Number   of float
               | Symbol   of string
               | List     of (EvalExpr list)
               | Function of (EvalExpr list -> EvalExpr)
-              | Special  of (EvalExpr list -> EvalExpr)
+              | Special  of (Map<string, EvalExpr> list -> EvalExpr list -> EvalExpr)
 
 type ExprPosMap() =
     inherit Dictionary<EvalExpr, Position>(HashIdentity.Reference)
@@ -50,25 +50,35 @@ let eval expr =
             | a,b                 -> failwith (sprintf "Malformed multiplication argument at %A" (pos a))
         List.reduce binop args
 
-    let environment = 
-        Map.ofList [ 
-            "*", Function(NumericBinaryOp (*));
-            "-", Function(NumericBinaryOp (-));
-            ]
-
-    let rec eval (expression : EvalExpr) =
+    let rec eval (env : Map<string, EvalExpr> list) (expression : EvalExpr) =
         match expression with
         | Number(_) as lit -> lit
         | String(_) as lit -> lit
-        | Symbol(s) -> environment.[s]
+        | Symbol(s) -> (List.head env).[s]
         | List([]) -> List([])
         | List(h :: t) ->
-            match eval h with
-            | Function(f) -> apply f t
-            | Special(s) -> s t
+            match eval env h with
+            | Function(f) -> apply f env t
+            | Special(s) -> s env t
             | o -> failwith (sprintf "Malformed expression at %A" (pos o))
         | _ -> failwith "Malformed expression."
-    and apply fn args = fn (List.map eval args)
+    and apply fn env args = fn (List.map (eval env) args)
+    and if' env args = 
+        match args with
+        | [condition;t;f] -> match eval env condition with
+                             | Number(0.0) -> eval env f
+                             | String("")  -> eval env f
+                             | List([])    -> eval env f
+                             | _           -> eval env t
+        | _ -> failwith "Malformed if expression at "
+
+    and globalenvironment = 
+        [ Map.ofList [ 
+            "*", Function(NumericBinaryOp (*));
+            "-", Function(NumericBinaryOp (-));
+            "if", Special(if');
+            ] ]
+
 
     let evalexpr = GenEvalExpr expr
-    eval evalexpr
+    eval globalenvironment evalexpr 

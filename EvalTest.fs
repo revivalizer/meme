@@ -27,3 +27,7 @@ let ``Simple expression eval`` () =
     AssertEqualNum "(  *   -4     -7    )" 28.0
     AssertEqualNum "(* 2 3 4 5)" 120.0
     AssertEqualNum "(- 10 5 5)" 0.0
+    AssertEqualNum "(if 0 1 2)" 2.0
+    AssertEqualNum "(if 1 1 2)" 1.0
+    AssertEqualNum "(if \"a\" 1 2)" 1.0
+    AssertEqualNum "(if \"\" 1 2)" 2.0
