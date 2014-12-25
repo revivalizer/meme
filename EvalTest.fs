@@ -22,3 +22,7 @@ let AssertEqualNum str expectedNum =
 let ``Simple expression eval`` () =
     AssertEqualNum "1" 1.0
     AssertEqualNum "(* 4 7)" 28.0
+    AssertEqualNum "(  * 4 7)" 28.0
+    AssertEqualNum "(  *   4     7    )" 28.0
+    AssertEqualNum "(  *   -4     -7    )" 28.0
+    AssertEqualNum "(* 2 3 4 5)" 120.0
