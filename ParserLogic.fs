@@ -10,12 +10,14 @@ let str_ws s = pstring s .>> ws
 
 let numberLiteral = getPosition .>>. pfloat .>> ws |>> Number
 
+let isSymbolChar = isAnyOf "!$%&*+-./:<=>?@^_~"
+
 let ident =
     let isAsciiIdStart c =
-        isAsciiLetter c || c = '_' || c = '*'
+        isAsciiLetter c || isSymbolChar c
 
     let isAsciiIdContinue c =
-        isAsciiLetter c || isDigit c || c = '_'
+        isAsciiLetter c || isSymbolChar c || isDigit c
 
     identifier (IdentifierOptions(isAsciiIdStart    = isAsciiIdStart,
                                   isAsciiIdContinue = isAsciiIdContinue))
