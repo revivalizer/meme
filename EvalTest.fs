@@ -31,3 +31,8 @@ let ``Simple expression eval`` () =
     AssertEqualNum "(if 1 1 2)" 1.0
     AssertEqualNum "(if \"a\" 1 2)" 1.0
     AssertEqualNum "(if \"\" 1 2)" 2.0
+
+[<Fact>]
+let ``Let`` () =
+    AssertEqualNum "(let ((x 2)) x)" 2.0
+    AssertEqualNum "(let ((x (* 2 3))) (- 8 x))" 2.0
