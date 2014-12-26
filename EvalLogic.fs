@@ -74,6 +74,20 @@ let eval expr =
             let env' = List.map bind bindings |> extend env 
             eval env' body
         | o -> failwith (sprintf "Malformed let expression at %A" (pos (List.head o)))
+    and lambda pos2 env args =
+        match args with
+        | [List(parameters);body] ->
+            let closure (p : Position) env' args =
+                let bindings = List.zip parameters args
+                let bind arg =
+                    match arg with
+                    | Symbol(p),e -> p,(eval env' e)
+                    | o -> failwith (sprintf "Malformed lambda call at %A" (pos (fst o)))
+                let env'' = List.map bind bindings |> extend env
+                eval env'' body
+            Special(closure)
+        | o -> failwith (sprintf "Malformed lambda expression at %A" pos2)
+        
 
     and globalenvironment = 
         [ Map.ofList [ 
@@ -81,6 +95,8 @@ let eval expr =
             "-", Function(NumericBinaryOp (-));
             "if", Special(if');
             "let", Special(let');
+            "let", Special(let');
+            "lambda", Special(lambda);
             ] ]
 
 

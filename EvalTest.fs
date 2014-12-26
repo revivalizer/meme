@@ -37,3 +37,10 @@ let ``Simple expression eval`` () =
 let ``Let`` () =
     AssertEqualNum "(let ((x 2)) x)" 2.0
     AssertEqualNum "(let ((x (* 2 3))) (- 8 x))" 2.0
+
+[<Fact>]
+let ``Lambda`` () =
+    AssertEqualNum "(let ((square (lambda (x) (* x x)))) (square 4))" 16.0
+    AssertEqualNum "(let ((times3 (let ((n 3)) (lambda (x) (* n x))))) (times3 4))" 12.0
+    AssertEqualNum "(let ((times3 (let ((makemultiplier (lambda (n) (lambda (x) (* n x))))) (makemultiplier 3)))) (times3 5))" 15.0
+
