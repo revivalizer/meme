@@ -15,8 +15,6 @@ let pos o =
     | String(p, _)   -> p
     | Symbol(p, _)   -> p
     | List(p, _)     -> p
-    //| Function(_) -> dummyPosition
-    //| Special(_)  -> dummyPosition
 
 let MakeNumber n =
     Number(dummyPosition, n)

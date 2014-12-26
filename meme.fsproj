@@ -54,6 +54,7 @@
     <Compile Include="ParserTypes.fs" />
     <Compile Include="ParserLogic.fs" />
     <Compile Include="ParserTests.fs" />
+    <Compile Include="EvalTypes.fs" />
     <Compile Include="EvalLogic.fs" />
     <Compile Include="EvalTest.fs" />
     <Compile Include="Program.fs" />

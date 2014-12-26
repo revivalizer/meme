@@ -5,6 +5,7 @@ open ErrorHandling;
 open ErrorHandlingExtensions;
 open ParserTypes;
 open ParserLogic;
+open EvalTypes;
 open EvalLogic;
 
 let parse_eval str =
