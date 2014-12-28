@@ -84,7 +84,7 @@ let eval expr =
                 | o -> failwith (sprintf "Malformed let expression at %A" (pos o))
             let env' = List.map bind bindings |> extend env 
             let update = function List([Symbol(s); e]) -> (env'.Head.Item s) := (eval env' e) 
-                                  | _ -> failwith (sprintf "Malformed 'letrec' binding at %A." pos)
+                                  | _ -> failwith (sprintf "Malformed 'letrec' binding at %A." pos2)
             List.iter update bindings 
             eval env' body
         | o -> failwith (sprintf "Malformed let expression at %A" (pos (List.head o)))
@@ -101,8 +101,16 @@ let eval expr =
                 eval env'' body
             Special(closure)
         | o -> failwith (sprintf "Malformed lambda expression at %A" pos2)
+    and letstar pos2 env = function 
+        | [List(bindings); body] ->
+            let bind env binding = 
+                match binding with 
+                | List([Symbol(s); e]) -> [s, ref (eval env e)] |> extend env
+                | o -> failwith (sprintf "Malformed 'let*' bioding at %A." (pos o))
+            let env' = List.fold bind env bindings 
+            eval env' body 
+        | _ -> failwith (sprintf "Malformed 'let*' at %A." pos2)
         
-
     and globalenvironment = 
         [ Map.ofList [ 
             "*", ref (Function(NumericBinaryOp (*)));
@@ -110,6 +118,7 @@ let eval expr =
             "if", ref (Special(if'));
             "let", ref (Special(let'));
             "letrec", ref (Special(letrec));
+            "let*", ref (Special(letstar));
             "lambda", ref (Special(lambda));
             ] ]
 

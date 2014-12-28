@@ -47,3 +47,10 @@ let ``Lambda`` () =
 [<Fact>]
 let ``Recursive Let`` () =
     AssertEqualNum "(letrec ((factorial (lambda (n) (if n (* n (factorial (- n 1))) 1)))) (factorial 4))" 24.0
+
+[<Fact>]
+let ``Sequential Let`` () =
+    AssertEqualNum "(let ((a 1) (b 2)) (let ((a b) (b a)) b))" 1.0               // let binds in parallel (should work in earlier versions too)
+    AssertEqualNum "(let ((a 1) (b 2)) (let* ((a b) (b a)) b))" 2.0              // let* binds sequentially
+    AssertEqualNum "(let ((a 5)) (let ((b (* a 2))) (let ((c (- b 3))) c)))" 7.0 // poor-man's sequential expressions
+    AssertEqualNum "(let* ((a 5) (b (* a 2)) (c (- b 3))) c)" 7.0                // let* sequential expressions
