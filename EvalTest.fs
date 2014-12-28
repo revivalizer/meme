@@ -13,11 +13,27 @@ let parse_eval str =
        | Success(ast) -> eval ast
        | Failure(f)   -> failwith f
 
+let toAstExpr evalExpr = 
+    let rec convert expr =
+        match expr with
+        | EvalExpr.Number(v) -> MakeNumber(v)
+        | EvalExpr.String(v) -> MakeString(v)
+        | EvalExpr.Symbol(v) -> MakeSymbol(v)
+        | EvalExpr.List(v)   -> MakeList(v |> List.map convert)
+        | o -> failwith "Illegal expression in conversion to AST" 
+    convert evalExpr
+
 let AssertEqualNum str expectedNum =
     match parse_eval str with
     | Number(n) -> Assert.Equal(n, expectedNum)
     | _         -> Assert.True false
 
+let AssertEqual str expected = 
+    let astExpr = parse_eval str |> toAstExpr
+    Assert.Equal(astExpr, expected)
+
+let MakeNumList nums =
+    List.map MakeNumber nums |> MakeList
 
 [<Fact>]
 let ``Simple expression eval`` () =
@@ -54,3 +70,15 @@ let ``Sequential Let`` () =
     AssertEqualNum "(let ((a 1) (b 2)) (let* ((a b) (b a)) b))" 2.0              // let* binds sequentially
     AssertEqualNum "(let ((a 5)) (let ((b (* a 2))) (let ((c (- b 3))) c)))" 7.0 // poor-man's sequential expressions
     AssertEqualNum "(let* ((a 5) (b (* a 2)) (c (- b 3))) c)" 7.0                // let* sequential expressions
+
+[<Fact>]
+let ``Lists`` () =
+    AssertEqual "(list 1 2 3)" (MakeNumList [1.0; 2.0; 3.0]) // list
+    AssertEqual "(list 1 2 3)" (MakeNumList [1.0; 2.0; 3.0]) // list 
+    AssertEqual "(car (list 1 2 3))" (MakeNumber 1.0) // car 
+    AssertEqual "(cdr (list 1 2 3))" (MakeNumList [2.0; 3.0]) // cdr 
+    AssertEqual "(cons 1 (list 2 3))" (MakeNumList [1.0; 2.0; 3.0])  // cons 
+    AssertEqual "(cons 1 (cons 2 (cons 3 ())))" (MakeNumList [1.0; 2.0; 3.0]) // cons x3 
+    AssertEqual "(let ((a 1) (b 2) (c 3)) (list a b c))"  (MakeNumList [1.0; 2.0; 3.0]) // list 
+    AssertEqual "(let ((a (list 1 2 3))) (car a))" (MakeNumber 1.0) // car 
+    AssertEqual "(let ((a (list 1 2 3))) (cdr a))" (MakeNumList [2.0; 3.0]) // cdr

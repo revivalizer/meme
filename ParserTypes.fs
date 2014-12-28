@@ -18,3 +18,12 @@ let pos o =
 
 let MakeNumber n =
     Number(dummyPosition, n)
+
+let MakeString str =
+    String(dummyPosition, str)
+
+let MakeSymbol s =
+    String(dummyPosition, s)
+
+let MakeList l =
+    List(dummyPosition, l)

@@ -110,6 +110,10 @@ let eval expr =
             let env' = List.fold bind env bindings 
             eval env' body 
         | _ -> failwith (sprintf "Malformed 'let*' at %A." pos2)
+    and cons = function [h; List(t)] -> List(h :: t) | o -> sprintf "Malformed 'cons' at %A." (pos (List.head o)) |> failwith
+    and car = function [List(h :: _)] -> h | o -> sprintf "Malformed 'car' at %A." (pos (List.head o)) |> failwith
+    and cdr = function [List(_ :: t)] -> List(t) | o -> sprintf "Malformed 'cdr' at %A." (pos (List.head o)) |> failwith
+    and lst args = List(args) 
         
     and globalenvironment = 
         [ Map.ofList [ 
@@ -120,6 +124,10 @@ let eval expr =
             "letrec", ref (Special(letrec));
             "let*", ref (Special(letstar));
             "lambda", ref (Special(lambda));
+            "cons", ref (Function(cons)) 
+            "car", ref (Function(car)) 
+            "cdr", ref (Function(cdr)) 
+            "list", ref (Function(lst))
             ] ]
 
 
