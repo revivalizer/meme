@@ -74,6 +74,20 @@ let eval expr =
             let env' = List.map bind bindings |> extend env 
             eval env' body
         | o -> failwith (sprintf "Malformed let expression at %A" (pos (List.head o)))
+    and letrec pos2 env args =
+        match args with
+        | [List(bindings);body] -> 
+            let dummy = Function(fun _ -> failwith (sprintf "Cannot evaluate dummy values at %A" pos))
+            let bind args =
+                match args with
+                | List([Symbol(s);e]) -> s,ref dummy
+                | o -> failwith (sprintf "Malformed let expression at %A" (pos o))
+            let env' = List.map bind bindings |> extend env 
+            let update = function List([Symbol(s); e]) -> (env'.Head.Item s) := (eval env' e) 
+                                  | _ -> failwith (sprintf "Malformed 'letrec' binding at %A." pos)
+            List.iter update bindings 
+            eval env' body
+        | o -> failwith (sprintf "Malformed let expression at %A" (pos (List.head o)))
     and lambda pos2 env args =
         match args with
         | [List(parameters);body] ->
@@ -95,6 +109,7 @@ let eval expr =
             "-", ref (Function(NumericBinaryOp (-)));
             "if", ref (Special(if'));
             "let", ref (Special(let'));
+            "letrec", ref (Special(letrec));
             "lambda", ref (Special(lambda));
             ] ]
 
