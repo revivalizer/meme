@@ -36,18 +36,18 @@ let eval expr =
             | a,b                 -> failwith (sprintf "Malformed multiplication argument at %A" (pos a))
         List.reduce binop args
 
-    let extend env bindings = (Map.ofList bindings) :: env 
+    let extend env bindings = (Map.ofList bindings) :: env
 
     let lookup pos env symbol =
         match List.tryPick (Map.tryFind symbol) env with 
         | Some(e) -> e
         | None    -> failwith (sprintf "No binding for '%s' at %A." symbol pos)
 
-    let rec eval (env : Map<string, EvalExpr> list) (expression : EvalExpr) =
+    let rec eval (env : Map<string, EvalExpr ref> list) (expression : EvalExpr) =
         match expression with
         | Number(_) as lit -> lit
         | String(_) as lit -> lit
-        | Symbol(s) as symbol -> lookup (pos symbol) env s
+        | Symbol(s) as symbol -> !(lookup (pos symbol) env s)
         | List([]) -> List([])
         | List(h :: t) ->
             match eval env h with
@@ -69,7 +69,7 @@ let eval expr =
         | [List(bindings);body] -> 
             let bind args =
                 match args with
-                | List([Symbol(s);e]) -> s,(eval env e)
+                | List([Symbol(s);e]) -> s,ref (eval env e)
                 | o -> failwith (sprintf "Malformed let expression at %A" (pos o))
             let env' = List.map bind bindings |> extend env 
             eval env' body
@@ -81,7 +81,7 @@ let eval expr =
                 let bindings = List.zip parameters args
                 let bind arg =
                     match arg with
-                    | Symbol(p),e -> p,(eval env' e)
+                    | Symbol(p),e -> p,ref (eval env' e)
                     | o -> failwith (sprintf "Malformed lambda call at %A" (pos (fst o)))
                 let env'' = List.map bind bindings |> extend env
                 eval env'' body
@@ -91,12 +91,11 @@ let eval expr =
 
     and globalenvironment = 
         [ Map.ofList [ 
-            "*", Function(NumericBinaryOp (*));
-            "-", Function(NumericBinaryOp (-));
-            "if", Special(if');
-            "let", Special(let');
-            "let", Special(let');
-            "lambda", Special(lambda);
+            "*", ref (Function(NumericBinaryOp (*)));
+            "-", ref (Function(NumericBinaryOp (-)));
+            "if", ref (Special(if'));
+            "let", ref (Special(let'));
+            "lambda", ref (Special(lambda));
             ] ]
 
 
