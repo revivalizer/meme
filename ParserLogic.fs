@@ -39,7 +39,10 @@ let stringLiteral =
 
 let atom = numberLiteral <|> symbol <|> stringLiteral
 let list = getPosition .>> str_ws "(" .>>. (many expr) .>> str_ws ")" |>> List
-do exprImpl := atom <|> list
+let expr' = atom <|> list
+let quoted_expr = getPosition .>> skipChar '\'' .>>. expr' |>> Quote
+let unquoted_expr = getPosition .>> skipChar ',' .>>. expr' |>> Unquote
+do exprImpl := quoted_expr <|> unquoted_expr <|> expr'
 
 let parse p str =
     match run p str with

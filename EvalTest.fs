@@ -82,3 +82,16 @@ let ``Lists`` () =
     AssertEqual "(let ((a 1) (b 2) (c 3)) (list a b c))"  (MakeNumList [1.0; 2.0; 3.0]) // list 
     AssertEqual "(let ((a (list 1 2 3))) (car a))" (MakeNumber 1.0) // car 
     AssertEqual "(let ((a (list 1 2 3))) (cdr a))" (MakeNumList [2.0; 3.0]) // cdr
+
+[<Fact>]
+let ``Quote`` () =
+    let x23 = (MakeList [MakeSymbol "*"; MakeNumber 2.0; MakeNumber 3.0])
+    AssertEqual "(quote (* 2 3))" x23 // quote primitive 
+    AssertEqual "'(* 2 3)" x23 // quote primitive with sugar 
+    AssertEqual "(eval '(* 2 3))" (MakeNumber 6.0) // eval quoted expression 
+    AssertEqual "(quote (* 2 (- 5 2)))" (MakeList [MakeSymbol "*"; MakeNumber 2.0; MakeList [MakeSymbol "-"; MakeNumber 5.0; MakeNumber 2.0]])// quote nested 
+    AssertEqual "(quote (* 2 (unquote (- 5 2))))" x23 // quote nested unquote 
+    AssertEqual "'(* 2 ,(- 5 2))" x23 // quote nested unquote with sugar 
+    AssertEqual "(quote (quote 1 2 3))" (MakeList [MakeSymbol "quote"; MakeNumber 1.0; MakeNumber 2.0; MakeNumber 3.0]) // quote special form 
+    AssertEqual "(let ((x 'rain) (y 'spain) (z 'plain)) '(the ,x in ,y falls mainly on the ,z))" (["the"; "rain"; "in"; "spain"; "falls"; "mainly"; "on"; "the"; "plain";] |> List.map MakeSymbol |> MakeList) // quote/unquote 
+    AssertEqual "(let ((* -)) (eval '(* 3 3)))" (MakeNumber 9.0) // eval uses top-level environment 

@@ -22,10 +22,12 @@ let eval expr =
             expr
         let rec convert parseexpr =
             match parseexpr with
-            | Expr.Number(pos, v) -> AddToPosMap (EvalExpr.Number(v)) pos
-            | Expr.String(pos, v) -> AddToPosMap (EvalExpr.String(v)) pos
-            | Expr.Symbol(pos, v) -> AddToPosMap (EvalExpr.Symbol(v)) pos
-            | Expr.List(pos, v)   -> AddToPosMap (EvalExpr.List(v |> List.map convert)) pos
+            | Expr.Number(pos, v)  -> AddToPosMap (EvalExpr.Number(v)) pos
+            | Expr.String(pos, v)  -> AddToPosMap (EvalExpr.String(v)) pos
+            | Expr.Symbol(pos, v)  -> AddToPosMap (EvalExpr.Symbol(v)) pos
+            | Expr.Quote(pos, v)   -> AddToPosMap (EvalExpr.Quote(v |> convert)) pos
+            | Expr.Unquote(pos, v) -> AddToPosMap (EvalExpr.Unquote(v |> convert)) pos
+            | Expr.List(pos, v)    -> AddToPosMap (EvalExpr.List(v |> List.map convert)) pos
         convert parseexpr
     
     let NumericBinaryOp f args =
@@ -48,6 +50,7 @@ let eval expr =
         | Number(_) as lit -> lit
         | String(_) as lit -> lit
         | Symbol(s) as symbol -> !(lookup (pos symbol) env s)
+        | Quote(e) -> quote (pos e) env [e]
         | List([]) -> List([])
         | List(h :: t) ->
             match eval env h with
@@ -114,7 +117,16 @@ let eval expr =
     and car = function [List(h :: _)] -> h | o -> sprintf "Malformed 'car' at %A." (pos (List.head o)) |> failwith
     and cdr = function [List(_ :: t)] -> List(t) | o -> sprintf "Malformed 'cdr' at %A." (pos (List.head o)) |> failwith
     and lst args = List(args) 
-        
+    and quote pos2 env =
+        let rec unquote expr =
+            match expr with
+            | Unquote(e) -> eval env e
+            | List([Symbol("unquote"); e]) -> eval env e 
+            | List(Symbol("unquote") :: _) -> failwith (sprintf "Malformed 'unquote' at %A." (pos expr)) // too many args 
+            | List(l) -> List(List.map unquote l)
+            | e -> e
+        function [e] -> unquote e | o -> failwith (sprintf "Malformed 'quote' at %A" (pos (List.head o)))
+    and eval' pos2 env = function [args] -> args |> eval env |> eval globalenvironment | o -> failwith (sprintf "Malformed 'eval' at %A." (pos (List.head o)))
     and globalenvironment = 
         [ Map.ofList [ 
             "*", ref (Function(NumericBinaryOp (*)));
@@ -128,6 +140,8 @@ let eval expr =
             "car", ref (Function(car)) 
             "cdr", ref (Function(cdr)) 
             "list", ref (Function(lst))
+            "quote", ref (Special(quote))
+            "eval", ref (Special(eval'))
             ] ]
 
 

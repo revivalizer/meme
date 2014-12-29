@@ -13,6 +13,8 @@ type EvalExpr = Number   of float
               | List     of (EvalExpr list)
               | Function of (EvalExpr list -> EvalExpr)
               | Special  of (Position -> Map<string, EvalExpr ref> list -> EvalExpr list -> EvalExpr)
+              | Quote    of EvalExpr
+              | Unquote  of EvalExpr
 
 type ExprPosMap() =
     inherit Dictionary<EvalExpr, Position>(HashIdentity.Reference)
