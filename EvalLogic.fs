@@ -127,6 +127,16 @@ let eval expr =
             | e -> e
         function [e] -> unquote e | o -> failwith (sprintf "Malformed 'quote' at %A" (pos (List.head o)))
     and eval' pos2 env = function [args] -> args |> eval env |> eval globalenvironment | o -> failwith (sprintf "Malformed 'eval' at %A." (pos (List.head o)))
+    and macro pos2 env = function 
+        | [List(parameters); body] -> 
+            let closure pos2' env' args = 
+                // bind parameters to actual arguments (but unevaluated, unlike lambda) 
+                let bindings = List.zip parameters args 
+                let bind = function Symbol(p), a -> p, ref a | o -> failwith (sprintf "Malformed 'macro' parameter at %A." (pos (fst o))) 
+                let env'' = List.map bind bindings |> extend env // extend the captured definition-time environment 
+                eval env'' body |> eval env' // eval against bound args, then again in the caller's environment 
+            Special(closure) 
+        | _ -> failwith (sprintf "Malformed 'macro' at %A." pos2)
     and globalenvironment = 
         [ Map.ofList [ 
             "*", ref (Function(NumericBinaryOp (*)));
@@ -142,6 +152,7 @@ let eval expr =
             "list", ref (Function(lst))
             "quote", ref (Special(quote))
             "eval", ref (Special(eval'))
+            "macro", ref (Special(macro))
             ] ]
 
 

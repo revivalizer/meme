@@ -95,3 +95,8 @@ let ``Quote`` () =
     AssertEqual "(quote (quote 1 2 3))" (MakeList [MakeSymbol "quote"; MakeNumber 1.0; MakeNumber 2.0; MakeNumber 3.0]) // quote special form 
     AssertEqual "(let ((x 'rain) (y 'spain) (z 'plain)) '(the ,x in ,y falls mainly on the ,z))" (["the"; "rain"; "in"; "spain"; "falls"; "mainly"; "on"; "the"; "plain";] |> List.map MakeSymbol |> MakeList) // quote/unquote 
     AssertEqual "(let ((* -)) (eval '(* 3 3)))" (MakeNumber 9.0) // eval uses top-level environment 
+
+[<Fact>]
+let ``Macro`` () =
+    AssertEqual "(let ((or (macro (a b) '(if ,a 1 (if ,b 1 0))))) (or 1 BOOM))" (MakeNumber 1.0) // macro as special form 
+    AssertEqual "(let ((and (macro (a b) '(if ,a (if ,b 1 0) 0)))) (and 0 BOOM))" (MakeNumber 0.0) // macro as special form
