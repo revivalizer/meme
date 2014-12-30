@@ -17,3 +17,5 @@ Heres an [Archive.org link] (http://web.archive.org/web/20100828212411/http://ww
 [Most recent Ikarus source] (http://bazaar.launchpad.net/~aghuloum/ikarus/ikarus.dev/files) From this we could probably glean how the x86 machine code is emitted.
 
 [Extended Tutorial] (http://web.archive.org/web/20100828212411/http://www.cs.indiana.edu/~aghuloum/compilers-tutorial-2006-09-16.pdf)
+
+[A DAIMI-Scheme VM and JIT compiler in OCaml] (http://www.zerny.dk/dsvm.html)
