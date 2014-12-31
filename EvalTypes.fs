@@ -12,9 +12,13 @@ type EvalExpr = Number   of float
               | Symbol   of string
               | List     of (EvalExpr list)
               | Function of (EvalExpr list -> EvalExpr)
-              | Special  of (Position -> Map<string, EvalExpr ref> list -> EvalExpr list -> EvalExpr)
+              | Special  of (Position -> Environment -> EvalExpr list -> EvalExpr)
               | Quote    of EvalExpr
               | Unquote  of EvalExpr
+              | Dummy    of string
+//and Continuation = Expression -> Expression // not used (yet?)
+and Frame = Map<string, EvalExpr ref> ref
+and Environment = Frame list
 
 type ExprPosMap() =
     inherit Dictionary<EvalExpr, Position>(HashIdentity.Reference)

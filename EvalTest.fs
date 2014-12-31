@@ -100,3 +100,12 @@ let ``Quote`` () =
 let ``Macro`` () =
     AssertEqual "(let ((or (macro (a b) '(if ,a 1 (if ,b 1 0))))) (or 1 BOOM))" (MakeNumber 1.0) // macro as special form 
     AssertEqual "(let ((and (macro (a b) '(if ,a (if ,b 1 0) 0)))) (and 0 BOOM))" (MakeNumber 0.0) // macro as special form
+
+
+[<Fact>]
+let ``Mutability`` () =
+    AssertEqual "(let ((a 1)) (begin (set! a 2) a))" (MakeNumber 2.0) // begin and assign 
+    AssertEqual "(let* ((a 5) (dummy (set! a 10))) a)" (MakeNumber 10.0) // re-assign after let 
+    AssertEqual "(begin (define fac (lambda (x) (if x (* x (fac (- x 1))) 1))) (fac 7))" (MakeNumber 5040.0) // define recursive 
+    AssertEqual "(begin (define square (lambda (x) (* x x))) (square 4))" (MakeNumber 16.0) // global def 
+    AssertEqual "(let ((x 4)) (begin (define y 8) (* x y))))" (MakeNumber 32.0) // local def

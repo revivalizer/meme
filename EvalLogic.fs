@@ -38,18 +38,24 @@ let eval expr =
             | a,b                 -> failwith (sprintf "Malformed multiplication argument at %A" (pos a))
         List.reduce binop args
 
-    let extend env bindings = (Map.ofList bindings) :: env
+    let extend env bindings = (ref (Map.ofList bindings) :: env)
 
-    let lookup pos env symbol =
+    (*let lookup pos (env : Environment) symbol =
         match List.tryPick (Map.tryFind symbol) env with 
         | Some(e) -> e
         | None    -> failwith (sprintf "No binding for '%s' at %A." symbol pos)
+        *)
+    let lookup pos2 env symbol =
+        match List.tryPick (fun (frame : Frame) -> Map.tryFind symbol frame.Value) env with
+        | Some(e) -> e
+        | None    -> failwith (sprintf "No binding for '%s' at %A." symbol pos2)
 
-    let rec eval (env : Map<string, EvalExpr ref> list) (expression : EvalExpr) =
+
+    let rec eval (env : Environment) (expression : EvalExpr) =
         match expression with
         | Number(_) as lit -> lit
         | String(_) as lit -> lit
-        | Symbol(s) as symbol -> !(lookup (pos symbol) env s)
+        | Symbol(s) as symbol -> (lookup (pos symbol) env s).Value
         | Quote(e) -> quote (pos e) env [e]
         | List([]) -> List([])
         | List(h :: t) ->
@@ -86,7 +92,7 @@ let eval expr =
                 | List([Symbol(s);e]) -> s,ref dummy
                 | o -> failwith (sprintf "Malformed let expression at %A" (pos o))
             let env' = List.map bind bindings |> extend env 
-            let update = function List([Symbol(s); e]) -> (env'.Head.Item s) := (eval env' e) 
+            let update = function List([Symbol(s); e]) -> (env'.Head.Value.Item s) := (eval env' e) 
                                   | _ -> failwith (sprintf "Malformed 'letrec' binding at %A." pos2)
             List.iter update bindings 
             eval env' body
@@ -137,23 +143,40 @@ let eval expr =
                 eval env'' body |> eval env' // eval against bound args, then again in the caller's environment 
             Special(closure) 
         | _ -> failwith (sprintf "Malformed 'macro' at %A." pos2)
+    and set pos2 env = function 
+        | [Symbol(s); e] -> 
+            (lookup pos2 env s) := eval env e 
+            Dummy(sprintf "Set %s" s) 
+        | _ -> failwith (sprintf "Malformed 'set!' at %A." pos2)
+    and begin' pos2 env = List.fold (fun _ e -> eval env e) (Dummy("Empty 'begin'"))
+    and define' pos2 (env : Environment) = function 
+        | [Symbol(s); e] -> 
+            let def = ref (Dummy("Dummy 'define'")) 
+            env.Head := Map.add s def env.Head.Value 
+            def := eval env e 
+            Dummy(sprintf "Defined %s" s) 
+        | _ -> failwith (sprintf "Malformed 'define' at %A." pos2)
     and globalenvironment = 
-        [ Map.ofList [ 
-            "*", ref (Function(NumericBinaryOp (*)));
-            "-", ref (Function(NumericBinaryOp (-)));
-            "if", ref (Special(if'));
-            "let", ref (Special(let'));
-            "letrec", ref (Special(letrec));
-            "let*", ref (Special(letstar));
-            "lambda", ref (Special(lambda));
-            "cons", ref (Function(cons)) 
-            "car", ref (Function(car)) 
-            "cdr", ref (Function(cdr)) 
-            "list", ref (Function(lst))
-            "quote", ref (Special(quote))
-            "eval", ref (Special(eval'))
-            "macro", ref (Special(macro))
-            ] ]
+        [ ref (Map.ofList 
+            [ 
+                "*", ref (Function(NumericBinaryOp (*)));
+                "-", ref (Function(NumericBinaryOp (-)));
+                "if", ref (Special(if'));
+                "let", ref (Special(let'));
+                "letrec", ref (Special(letrec));
+                "let*", ref (Special(letstar));
+                "lambda", ref (Special(lambda));
+                "cons", ref (Function(cons)) 
+                "car", ref (Function(car)) 
+                "cdr", ref (Function(cdr)) 
+                "list", ref (Function(lst))
+                "quote", ref (Special(quote))
+                "eval", ref (Special(eval'))
+                "macro", ref (Special(macro))
+                "set!", ref (Special(set))
+                "begin", ref (Special(begin'))
+                "define", ref (Special(define'))
+            ]) ]
 
 
     let evalexpr = GenEvalExpr expr
