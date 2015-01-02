@@ -32,7 +32,7 @@ solution "memecpp"
 	location "build"
 
 	project "memecpp"
-		kind "SharedLib"
+		kind "WindowedApp"
 		targetname "lift"
 
 		files { "*.h", "*.cpp" }
