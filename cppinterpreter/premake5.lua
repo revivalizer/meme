@@ -5,8 +5,8 @@ invader.commonobjdir    = "build/%{prj.name}/obj/%{cfg.longname}"
 invader.commoncompilerflags   = { "FatalWarnings", "MultiProcessorCompile", "No64BitChecks",  "NoEditAndContinue" }
 -- not sure about "NoFramePointer"
 invader.commonstandaloneflags = { "NoBufferSecurityCheck", "NoExceptions", "NoManifest", "NoRTTI", "NoRuntimeChecks", "OmitDefaultLibrary" }
-invader.commonbuildoptions    = { "/wd4725" } -- 4725 is old warning for tan asm func
-invader.commonlinkoptions     = { "/NODEFAULTLIB" } -- 4725 is old warning for tan asm func
+invader.commonbuildoptions    = { "/wd4725 /wd4201" } -- 4725 is old warning for tan asm func
+invader.commonlinkoptions     = { "/NODEFAULTLIB" }
 
 solution "memecpp"
 	configurations { "Debug", "Release" }
@@ -34,9 +34,10 @@ solution "memecpp"
 
 	project "memecpp"
 		kind "WindowedApp"
-		targetname "lift"
+		targetname "memecpp"
 
 		files { "*.h", "*.cpp" }
+		files { "notes.txt" }
 
 		links { "base" }
 		links { "startup" }
