@@ -21,6 +21,7 @@ solution "memecpp"
 	buildoptions(invader.commonbuildoptions)
 	linkoptions (invader.commonlinkoptions)
 --	removelinkoptions { "/NODEFAULTLIB" }
+	linkoptions {"/CRINKLER /REPORT:crinkler.html /TRANSFORM:CALLS"}
 
 	warnings       "extra"
 	floatingpoint  "fast"
