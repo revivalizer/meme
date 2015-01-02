@@ -28,3 +28,7 @@ let parse_generate_header str =
 let ``Generate unique strings`` () =
     Assert.True((parse_generate_header "(\"test\")").Count=1)
     Assert.True((parse_generate_header "(\"test\" \"test\")").Count=1)
+    Assert.True((parse_generate_header "(\"test\" \"test\" \"test\" \"test\" \"test\" \"test\")").Count=1)
+    Assert.True((parse_generate_header "(\"test\" (\"test\" (\"test\" \"test\") \"test\") \"test\")").Count=1)
+    Assert.True((parse_generate_header "(\"test1\" (\"test2\" (\"test3\" \"test1\") \"test2\") \"test3\")").Count=3)
+    Assert.True((parse_generate_header "(\"test1\" (\"test2\" (\"test3\" \"test3\") \"test2\") \"test1\")").Count=3)
