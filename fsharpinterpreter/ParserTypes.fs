@@ -31,3 +31,9 @@ let MakeSymbol s =
 
 let MakeList l =
     List(dummyPosition, l)
+
+let MakeQuote e =
+    Quote(dummyPosition, e)
+
+let MakeUnquote e =
+    Unquote(dummyPosition, e)

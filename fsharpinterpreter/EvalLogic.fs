@@ -127,8 +127,6 @@ let eval expr =
         let rec unquote expr =
             match expr with
             | Unquote(e) -> eval env e
-            | List([Symbol("unquote"); e]) -> eval env e 
-            | List(Symbol("unquote") :: _) -> failwith (sprintf "Malformed 'unquote' at %A." (pos expr)) // too many args 
             | List(l) -> List(List.map unquote l)
             | e -> e
         function [e] -> unquote e | o -> failwith (sprintf "Malformed 'quote' at %A" (pos (List.head o)))
