@@ -59,6 +59,7 @@
     <Compile Include="EvalLogic.fs" />
     <Compile Include="EvalTest.fs" />
     <Compile Include="Export.fs" />
+    <Compile Include="ExportTests.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <None Include="packages.config" />
