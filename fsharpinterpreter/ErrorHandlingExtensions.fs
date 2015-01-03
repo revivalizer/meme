@@ -17,3 +17,7 @@ let success f =
 let failure f =
     not (success f)
 
+let extractOrFail r =
+    match r with
+    | Success(s) -> s
+    | Failure(f) -> failwith f

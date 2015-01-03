@@ -43,11 +43,6 @@ let analyzeUniques expr =
         uniqueNumbers = visitTree makeUniqueNumbers Map.empty expr;
     }
 
-let parse_analyze_uniques str =
-    match str |> parse expr |> bind analyzeUniques with
-    | Success(uniques) -> uniques
-    | Failure(f)   -> failwith f
-
 type BinaryExpr = {
     binaryExpr             : uint16 list
     expr                   : Expr
@@ -65,7 +60,7 @@ type NodeType =
     | Quote    = 5us
     | Unquote  = 6us
 
-let generateBinaryExpression (res : AnalyzedExpr) =
+let generateBinaryRepresentation (res : AnalyzedExpr) =
     let rec generate expr =
         match expr with
         | String(_, s)   -> [uint16(NodeType.String); res.uniqueStrings.[s]]
@@ -81,3 +76,4 @@ let generateBinaryExpression (res : AnalyzedExpr) =
         uniqueSymbols = res.uniqueSymbols
         uniqueNumbers = res.uniqueNumbers
     }
+
