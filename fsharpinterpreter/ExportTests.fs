@@ -35,7 +35,7 @@ let ``Generate unique symbols`` () =
 [<Fact>]
 let ``Generate unique numbers`` () =
     AssertTrueWithUniques "(1.0)" (fun u -> u.uniqueNumbers.Count=1)
-    AssertTrueWithUniques "(1.0)" (fun u -> u.uniqueNumbers.[1.0]=0)
+    AssertTrueWithUniques "(1.0)" (fun u -> u.uniqueNumbers.[1.0]=0us)
     let l1 = "(((1 2) 2 3) 3 1)"
     AssertTrueWithUniques l1 (fun u -> u.uniqueNumbers.Count=3)
     AssertTrueWithUniques l1 (fun u -> u.uniqueNumbers.ContainsKey 1.0)
