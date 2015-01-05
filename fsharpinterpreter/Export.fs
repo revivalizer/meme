@@ -113,11 +113,11 @@ let generateBinaryData (res : BinaryExpr) =
         writer.Write(uint16(res.uniqueStrings.Count))
         writer.Write(uint16(res.uniqueSymbols.Count))
         writer.Write(uint16(res.uniqueNumbers.Count))
-        writer.Write(uint32(0)) // dummy
         writer.Write(uint32(numberPos))
         writer.Write(uint32(treePos))
         writer.Write(uint32(stringPos))
         writer.Write(uint32(symbolPos))
+        writer.Write(uint32(0)) // dummy
     let writeList (writer : BinaryWriter) (list : List<'a>) bytesPerElement =
         let dataSize = list.Length * bytesPerElement
         let data:byte[] = Array.zeroCreate dataSize
@@ -127,11 +127,13 @@ let generateBinaryData (res : BinaryExpr) =
         Map.toList map |> List.sortBy (fun (key, v) -> v)
     let appendZeroTerminator list =
         list |> List.map (fun str -> str + "\0")
+    let toCharList strList =
+        strList |> List.fold (fun state s -> state @ [for c in s -> c]) [] 
     let stream = new MemoryStream()
     let writer = new BinaryWriter(stream, System.Text.Encoding.ASCII)
     writeHeader writer res
     writeList writer (res.uniqueNumbers |> mapToOrderedList |> List.map fst) 8
     writeList writer res.binaryExpr 2
-    writeList writer (res.uniqueStrings |> mapToOrderedList |> List.map fst |> appendZeroTerminator) 1
-    writeList writer (res.uniqueSymbols |> mapToOrderedList |> List.map fst |> appendZeroTerminator) 1
+    writeList writer (res.uniqueStrings |> mapToOrderedList |> List.map fst |> appendZeroTerminator |> toCharList) 1
+    writeList writer (res.uniqueSymbols |> mapToOrderedList |> List.map fst |> appendZeroTerminator |> toCharList) 1
 
