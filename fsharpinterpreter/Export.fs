@@ -4,6 +4,7 @@ open ParserTypes
 open ParserLogic
 open ErrorHandling;
 open ErrorHandlingExtensions;
+open System.IO;
 
 type AnalyzedExpr = {
     expr                   : Expr
@@ -76,4 +77,61 @@ let generateBinaryRepresentation (res : AnalyzedExpr) =
         uniqueSymbols = res.uniqueSymbols
         uniqueNumbers = res.uniqueNumbers
     }
+
+let generateBinaryData (res : BinaryExpr) =
+    (* Header format:
+        uint32   : size of struct in bytes
+        uint16   : num elements in tree rep
+        uint16   : num strings
+        uint16   : num symbols
+        uint16   : num numbers
+        uint16*  : pointer to binary tree representation
+        char*    : pointer to zero-terminated string list
+        char*    : pointer to zero-terminated symbols list
+        double*  : pointer to number array
+        uint32   : dummy data, for 64 bit alignment
+        double array: numbers
+        uint16 array: tree rep
+        char array: string list
+        char array: symbol list
+    *)
+    let writeHeader (writer : BinaryWriter) res =
+        let computeAccumulatedKeyLength map =
+            map |> Map.fold (fun state (key : string) value -> state + key.Length + 1) 0 // assume one extra byte for zero termination for every string
+        let headerSize = 32
+        let treeSize   = res.binaryExpr.Length * 2
+        let stringSize = res.uniqueStrings |> computeAccumulatedKeyLength
+        let symbolSize = res.uniqueSymbols |> computeAccumulatedKeyLength
+        let numberSize = res.uniqueNumbers.Count * 8
+        let numberPos = headerSize
+        let treePos = numberPos + numberSize
+        let stringPos = treePos + treeSize
+        let symbolPos = stringPos + stringSize
+        let totalSize = headerSize + numberSize + treeSize + stringSize + symbolSize
+        writer.Write(uint32(totalSize))
+        writer.Write(uint16(res.binaryExpr.Length))
+        writer.Write(uint16(res.uniqueStrings.Count))
+        writer.Write(uint16(res.uniqueSymbols.Count))
+        writer.Write(uint16(res.uniqueNumbers.Count))
+        writer.Write(uint32(0)) // dummy
+        writer.Write(uint32(numberPos))
+        writer.Write(uint32(treePos))
+        writer.Write(uint32(stringPos))
+        writer.Write(uint32(symbolPos))
+    let writeList (writer : BinaryWriter) (list : List<'a>) bytesPerElement =
+        let dataSize = list.Length * bytesPerElement
+        let data:byte[] = Array.zeroCreate dataSize
+        System.Buffer.BlockCopy(list |> List.toArray, 0, data, 0, data.Length)
+        writer.Write(data)
+    let mapToOrderedList (map : Map<'a, uint16>) =
+        Map.toList map |> List.sortBy (fun (key, v) -> v)
+    let appendZeroTerminator list =
+        list |> List.map (fun str -> str + "\0")
+    let stream = new MemoryStream()
+    let writer = new BinaryWriter(stream, System.Text.Encoding.ASCII)
+    writeHeader writer res
+    writeList writer (res.uniqueNumbers |> mapToOrderedList |> List.map fst) 8
+    writeList writer res.binaryExpr 2
+    writeList writer (res.uniqueStrings |> mapToOrderedList |> List.map fst |> appendZeroTerminator) 1
+    writeList writer (res.uniqueSymbols |> mapToOrderedList |> List.map fst |> appendZeroTerminator) 1
 
