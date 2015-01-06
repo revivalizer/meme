@@ -40,29 +40,13 @@ let stringLiteral =
 let atom = numberLiteral <|> symbol <|> stringLiteral
 let list = getPosition .>> str_ws "(" .>>. (many expr) .>> str_ws ")" |>> List
 let expr' = atom <|> list
-let quoted_expr = getPosition .>> skipChar '\'' .>>. expr' |>> Quote
-let unquoted_expr = getPosition .>> skipChar ',' .>>. expr' |>> Unquote
+let quoted_expr = getPosition .>> skipChar '\'' .>>. expr' |>> (fun (p, e) -> List(p, [Symbol(p, "quote"); e]))
+let unquoted_expr = getPosition .>> skipChar ',' .>>. expr' |>> (fun (p, e) -> List(p, [Symbol(p, "unquote"); e]))
 do exprImpl := quoted_expr <|> unquoted_expr <|> expr'
-
-// Transforms List[Symbol[quote]; expression] to Quote[expression]
-// Does the same thing for unquote
-// This simplifies the representation a little
-let TransformQuoteLists (expr : Expr) =
-    let rec transform expr =
-        match expr with
-            | List(p, [Symbol(_, "quote"); e])    -> Quote(p, (transform e))
-            | List(p,  Symbol(q, "quote") :: t)   -> Quote(q, List(p, t))
-            | List(p, [Symbol(_, "unquote"); e])  -> Unquote(p, (transform e))
-            | List(p,  Symbol(_, "unquote") :: t) -> failwith (sprintf "Malformed 'unquote' at %A" p)
-            | List(p, l)    -> List(p, l |> List.map transform)
-            | Quote(p, e)   -> Quote(p, transform e)
-            | Unquote(p, e) -> Unquote(p, transform e)
-            | e -> e
-    Success (transform expr)
 
 let parse p str =
     match run p str with
-    | ParserResult.Success(result, _, _)   -> Success(result) |> bind TransformQuoteLists
+    | ParserResult.Success(result, _, _)   -> Success(result)
     | ParserResult.Failure(errorMsg, _, _) -> Failure(errorMsg)
 
 

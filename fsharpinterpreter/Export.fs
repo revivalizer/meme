@@ -22,8 +22,6 @@ let analyzeUniques expr =
     let rec visitTree fn acc expr = 
         match expr with
         | List(_, l) -> List.fold (visitTree fn) acc l
-        | Quote(_, e) -> visitTree fn acc e
-        | Unquote(_, e) -> visitTree fn acc e
         | e -> fn acc e
     let makeUniqueStrings (map : Map<string, uint16>) e =
         match e with
@@ -58,8 +56,6 @@ type NodeType =
     | String   = 2us
     | Symbol   = 3us
     | Number   = 4us
-    | Quote    = 5us
-    | Unquote  = 6us
 
 let generateBinaryRepresentation (res : AnalyzedExpr) =
     let rec generate expr =
@@ -67,8 +63,6 @@ let generateBinaryRepresentation (res : AnalyzedExpr) =
         | String(_, s)   -> [uint16(NodeType.String); res.uniqueStrings.[s]]
         | Symbol(_, s)   -> [uint16(NodeType.Symbol); res.uniqueSymbols.[s]]
         | Number(_, n)   -> [uint16(NodeType.Number); res.uniqueNumbers.[n]]
-        | Quote(_, e)    -> uint16(NodeType.Quote) :: (generate e)
-        | Unquote(_, e)  -> uint16(NodeType.Unquote) :: (generate e)
         | List(_, l)     -> [uint16(NodeType.List)] @ (l |> List.map generate |> List.concat) @ [uint16(NodeType.EOC)]
     Success {
         binaryExpr = (generate res.expr)

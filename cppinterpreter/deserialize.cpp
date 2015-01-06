@@ -25,8 +25,6 @@ enum NodeType // this must match F# enum, of course
 	String,
 	Symbol,
 	Number,
-	Quote,
-	Unquote
 };
 
 atom_t* deserialize(Node** node, ExtendedBinaryExpression* expr, Environment* env)
@@ -71,12 +69,6 @@ atom_t* deserialize(Node** node, ExtendedBinaryExpression* expr, Environment* en
 			*node++;
 			return new_number(expr->numbers[*(*node++)]);
 			break;
-		/*case Quote:
-			//new_quoe
-			break;
-		case Unquote:
-			break;
-			*/
 	}
 
 	return nullptr;

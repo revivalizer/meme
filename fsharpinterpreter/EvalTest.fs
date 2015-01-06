@@ -20,8 +20,6 @@ let toAstExpr evalExpr =
         | EvalExpr.String(v)  -> MakeString(v)
         | EvalExpr.Symbol(v)  -> MakeSymbol(v)
         | EvalExpr.List(v)    -> MakeList(v |> List.map convert)
-        | EvalExpr.Quote(e)   -> MakeQuote(convert e)
-        | EvalExpr.Unquote(e) -> MakeUnquote(convert e)
         | o -> failwith "Illegal expression in conversion to AST" 
     convert evalExpr
 
@@ -94,7 +92,7 @@ let ``Quote`` () =
     AssertEqual "(quote (* 2 (- 5 2)))" (MakeList [MakeSymbol "*"; MakeNumber 2.0; MakeList [MakeSymbol "-"; MakeNumber 5.0; MakeNumber 2.0]])// quote nested 
     AssertEqual "(quote (* 2 (unquote (- 5 2))))" x23 // quote nested unquote 
     AssertEqual "'(* 2 ,(- 5 2))" x23 // quote nested unquote with sugar 
-    AssertEqual "(quote (quote 1 2 3))" (MakeQuote (MakeList [MakeNumber 1.0; MakeNumber 2.0; MakeNumber 3.0])) // quote special form 
+    AssertEqual "(quote (quote 1 2 3))" (MakeList [MakeSymbol "quote"; MakeNumber 1.0; MakeNumber 2.0; MakeNumber 3.0]) // quote special form 
     AssertEqual "(let ((x 'rain) (y 'spain) (z 'plain)) '(the ,x in ,y falls mainly on the ,z))" (["the"; "rain"; "in"; "spain"; "falls"; "mainly"; "on"; "the"; "plain";] |> List.map MakeSymbol |> MakeList) // quote/unquote 
     AssertEqual "(let ((* -)) (eval '(* 3 3)))" (MakeNumber 9.0) // eval uses top-level environment 
 

@@ -13,8 +13,6 @@ type EvalExpr = Number   of float
               | List     of (EvalExpr list)
               | Function of (EvalExpr list -> EvalExpr)
               | Special  of (Position -> Environment -> EvalExpr list -> EvalExpr)
-              | Quote    of EvalExpr
-              | Unquote  of EvalExpr
               | Dummy    of string
 //and Continuation = Expression -> Expression // not used (yet?)
 and Frame = Map<string, EvalExpr ref> ref

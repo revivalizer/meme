@@ -25,8 +25,6 @@ let eval expr =
             | Expr.Number(pos, v)  -> AddToPosMap (EvalExpr.Number(v)) pos
             | Expr.String(pos, v)  -> AddToPosMap (EvalExpr.String(v)) pos
             | Expr.Symbol(pos, v)  -> AddToPosMap (EvalExpr.Symbol(v)) pos
-            | Expr.Quote(pos, v)   -> AddToPosMap (EvalExpr.Quote(v |> convert)) pos
-            | Expr.Unquote(pos, v) -> AddToPosMap (EvalExpr.Unquote(v |> convert)) pos
             | Expr.List(pos, v)    -> AddToPosMap (EvalExpr.List(v |> List.map convert)) pos
         convert parseexpr
     
@@ -56,7 +54,6 @@ let eval expr =
         | Number(_) as lit -> lit
         | String(_) as lit -> lit
         | Symbol(s) as symbol -> (lookup (pos symbol) env s).Value
-        | Quote(e) -> quote (pos e) env [e]
         | List([]) -> List([])
         | List(h :: t) ->
             match eval env h with
@@ -126,8 +123,9 @@ let eval expr =
     and quote pos2 env =
         let rec unquote expr =
             match expr with
-            | Unquote(e) -> eval env e
-            | List(l) -> List(List.map unquote l)
+            | List([Symbol("unquote"); e]) -> eval env e 
+            | List(Symbol("unquote") :: _) -> failwith (sprintf "Malformed 'unquote' at %A." (pos expr)) // too many args 
+            | List(h :: t) -> List(h :: (List.map unquote t)) // recurse 
             | e -> e
         function [e] -> unquote e | o -> failwith (sprintf "Malformed 'quote' at %A" (pos (List.head o)))
     and eval' pos2 env = function [args] -> args |> eval env |> eval globalenvironment | o -> failwith (sprintf "Malformed 'eval' at %A." (pos (List.head o)))
