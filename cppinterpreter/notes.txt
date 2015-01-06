@@ -1,3 +1,6 @@
 SIZES
 Base size w/ crinkler in Release mode
 795 bytes
+
+With untested/unoptimized deserialization
+1144

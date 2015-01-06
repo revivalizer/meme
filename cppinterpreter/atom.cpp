@@ -1,7 +1,7 @@
 #include "libs/base/base.h"
 #include "atom.h"
 
-atom_t *nil;
+atom_t *nil = nullptr;
 
 atom_t *new_atom(const atom_type_t type) {
 	atom_t *result = new atom_t;
