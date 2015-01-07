@@ -76,7 +76,7 @@ atom_t *symbol_table;
 atom_t *intern(const char *symbol) {
 	atom_t *i;
 	for (i = symbol_table; !no(i); i = cdr(i))
-		if (!strcmp(symbol, symbol(car(i))))
+		if (!zstrcmp(symbol, symbol(car(i))))
 			return car(i);
 	return car(symbol_table = cons(new_symbol(symbol), symbol_table));
 }
