@@ -32,8 +32,8 @@ let eval expr =
         let binop a b =
             match a,b with
             | Number(a),Number(b) -> Number(f a b)
-            | Number(a),b         -> failwith (sprintf "Malformed multiplication argument at %A" (pos b))
-            | a,b                 -> failwith (sprintf "Malformed multiplication argument at %A" (pos a))
+            | Number(a),b         -> failwith (sprintf "Malformed numeric argument at %A" (pos b))
+            | a,b                 -> failwith (sprintf "Malformed numeric argument at %A" (pos a))
         List.reduce binop args
 
     let extend env bindings = (ref (Map.ofList bindings) :: env)
