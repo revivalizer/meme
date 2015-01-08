@@ -19,3 +19,13 @@ Heres an [Archive.org link] (http://web.archive.org/web/20100828212411/http://ww
 [Extended Tutorial] (http://web.archive.org/web/20100828212411/http://www.cs.indiana.edu/~aghuloum/compilers-tutorial-2006-09-16.pdf)
 
 [A DAIMI-Scheme VM and JIT compiler in OCaml] (http://www.zerny.dk/dsvm.html)
+
+status
+====
+- [x] F# S-expression parser
+- [x] F# interpreter. Has if, let, letrec, let*, lambda, cons, car, cdr, list, eval, quote, unquote, macro, set!, begin, define. String, symbol, number primitives. But very little else. No continuation passing.
+- [x] F# export of binary representation of parsed S-expression
+- [ ] Interop between C++ and F# parser/exporter
+- [ ] C++ interpreter
+- [ ] Scheme to x86 compiler in Scheme
+- [ ] IDE
