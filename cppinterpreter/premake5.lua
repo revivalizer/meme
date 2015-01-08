@@ -9,7 +9,7 @@ invader.commonbuildoptions    = { "/wd4725 /wd4201" } -- 4725 is old warning for
 invader.commonlinkoptions     = { "/NODEFAULTLIB" }
 
 solution "memecpp"
-	configurations { "Debug", "Release" }
+	configurations { "Debug", "Release", "Debug Standalone", "Release Standalone", "Release Standalone Crinkler", "Release Standalone Kkrunchy" }
 
 	targetdir(invader.commontargetdir)
 	objdir   (invader.commonobjdir)
@@ -21,7 +21,6 @@ solution "memecpp"
 	buildoptions(invader.commonbuildoptions)
 	linkoptions (invader.commonlinkoptions)
 --	removelinkoptions { "/NODEFAULTLIB" }
-	linkoptions {"/CRINKLER /REPORT:crinkler.html /TRANSFORM:CALLS"}
 
 	warnings       "extra"
 	floatingpoint  "fast"
@@ -47,9 +46,32 @@ solution "memecpp"
 			flags { "Symbols", "Maps" }
 			optimize "Off"
 
+		filter "Debug Standalone"
+			defines { "DEBUG" }
+			flags { "Symbols", "Maps" }
+			optimize "Off"
+			defines { "STANDALONE" }
+
 		filter "Release"
 			defines { "NDEBUG" }
 			optimize "Size"
+
+		filter "Release Standalone"
+			defines { "NDEBUG" }
+			optimize "Size"
+			defines { "STANDALONE" }
+
+		filter "Release Standalone Crinkler"
+			defines { "NDEBUG" }
+			optimize "Size"
+			defines { "STANDALONE" }
+			linkoptions {"/CRINKLER /REPORT:crinkler.html /TRANSFORM:CALLS"}
+
+		filter "Release Standalone Kkrunchy"
+			defines { "NDEBUG" }
+			optimize "Size"
+			defines { "STANDALONE" }
+			-- needs post processing kkrunchy call
 
 	include "../../trespasser/libs/base"
 	include "../../trespasser/libs/startup"
