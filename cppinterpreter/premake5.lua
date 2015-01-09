@@ -27,7 +27,7 @@ solution "memecpp"
 
 	defines { "_CRT_SECURE_NO_WARNINGS" }
 
-	includedirs { "../../trespasser" }
+	includedirs { "../../64klibs" }
 
 	location "build"
 
@@ -73,5 +73,5 @@ solution "memecpp"
 			defines { "STANDALONE" }
 			-- needs post processing kkrunchy call
 
-	include "../../trespasser/libs/base"
-	include "../../trespasser/libs/startup"
+	include "../../64klibs/base"
+	include "../../64klibs/startup"
