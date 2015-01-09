@@ -6,6 +6,9 @@ open ErrorHandling;
 open ErrorHandlingExtensions;
 open ParserTypes;
 open ParserLogic;
+open System;
+open System.IO
+open System.IO.Pipes
 
 let test f str =
     match f str with
@@ -14,6 +17,34 @@ let test f str =
 
 [<EntryPoint>]
 let main argv = 
-    test (parse numberLiteral) "sin().axe().cos(3)"
-    printfn "%A" argv
-    0 // return an integer exit code
+    printfn "[F#] NamedPipeServerStream thread created."
+    let pipeServer = new NamedPipeServerStream("memeparser", PipeDirection.InOut, 4)
+    let rec loop() =
+        //wait for connection
+        printfn "[F#] Wait for a client to connect"
+        pipeServer.WaitForConnection()
+
+        printfn "[F#] Client connected."
+        try
+            // Stream for the request. 
+            use sr = new StreamReader(pipeServer)
+            // Stream for the response. 
+            use sw = new StreamWriter(pipeServer, AutoFlush = true)
+
+            // Read request from the stream. 
+            let echo = sr.ReadLine();
+
+            printfn "[F#] Request message: %s" echo
+
+            // Write response to the stream.
+            echo |> sprintf "[F#]: %s" |> sw.WriteLine
+
+            pipeServer.Disconnect()
+            //if true then loop()
+        with
+        | _ as e -> printfn "[F#]ERROR: %s" e.Message
+    loop()
+    printfn "[F#] Client Closing."
+    Console.Read() |> ignore
+    pipeServer.Close()
+    0
