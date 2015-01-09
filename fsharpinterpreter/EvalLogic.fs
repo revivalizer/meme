@@ -12,6 +12,9 @@ let eval expr =
     let pos o =
        posMap.[o] 
 
+    let malformed str p =
+        failwith (sprintf "Malformed %s at %A." str p)
+
     // Convert parse types to eval types
     (* You could debate wether it's neccesary to split into parse and eval types.
        I didn't like that Special and Function had to be part of parser types, because
@@ -32,22 +35,16 @@ let eval expr =
         let binop a b =
             match a,b with
             | Number(a),Number(b) -> Number(f a b)
-            | Number(a),b         -> failwith (sprintf "Malformed numeric argument at %A" (pos b))
-            | a,b                 -> failwith (sprintf "Malformed numeric argument at %A" (pos a))
+            | Number(a),b         -> malformed "numeric argument" (pos b)
+            | a,b                 -> malformed "numeric argument" (pos a)
         List.reduce binop args
 
     let extend env bindings = (ref (Map.ofList bindings) :: env)
 
-    (*let lookup pos (env : Environment) symbol =
-        match List.tryPick (Map.tryFind symbol) env with 
-        | Some(e) -> e
-        | None    -> failwith (sprintf "No binding for '%s' at %A." symbol pos)
-        *)
     let lookup p env symbol =
         match List.tryPick (fun (frame : Frame) -> Map.tryFind symbol frame.Value) env with
         | Some(e) -> e
         | None    -> failwith (sprintf "No binding for '%s' at %A." symbol p)
-
 
     let rec eval (env : Environment) (expression : EvalExpr) =
         match expression with
@@ -59,7 +56,7 @@ let eval expr =
             match eval env h with
             | Function(f) -> apply f env t
             | Special(s) -> s env t
-            | o -> failwith (sprintf "Malformed expression at %A" (pos o))
+            | o -> malformed "expression" (pos o)
         | _ -> failwith "Malformed expression."
     and apply fn env args = fn (List.map (eval env) args)
     and if' env args = 
@@ -69,17 +66,17 @@ let eval expr =
                              | String("")  -> eval env f
                              | List([])    -> eval env f
                              | _           -> eval env t
-        | _ -> failwith (sprintf "Malformed if arguments at %A" (pos (List.head args)))
+        | _ -> malformed "if arguments" (pos (List.head args))
     and let' env args =
         match args with
         | [List(bindings);body] -> 
             let bind args =
                 match args with
                 | List([Symbol(s);e]) -> s,ref (eval env e)
-                | o -> failwith (sprintf "Malformed let expression at %A" (pos o))
+                | o -> malformed "let expression" (pos o)
             let env' = List.map bind bindings |> extend env 
             eval env' body
-        | o -> failwith (sprintf "Malformed let expression at %A" (pos (List.head o)))
+        | o -> malformed "let expression" (pos (List.head o))
     and letrec env args =
         match args with
         | [List(bindings);body] -> 
@@ -87,13 +84,13 @@ let eval expr =
             let bind args =
                 match args with
                 | List([Symbol(s);e]) -> s,ref dummy
-                | o -> failwith (sprintf "Malformed let expression at %A" (pos o))
+                | o -> malformed "letrec expression" (pos o)
             let env' = List.map bind bindings |> extend env 
             let update = function List([Symbol(s); e]) -> (env'.Head.Value.Item s) := (eval env' e) 
-                                  | o -> failwith (sprintf "Malformed 'letrec' binding at %A." (pos o))
+                                  | o -> malformed "letrec binding" (pos o)
             List.iter update bindings 
             eval env' body
-        | o -> failwith (sprintf "Malformed let expression at %A" (pos (List.head o)))
+        | o -> malformed "let expression" (pos (List.head o))
     and lambda env args =
         match args with
         | [List(parameters);body] ->
@@ -102,49 +99,49 @@ let eval expr =
                 let bind arg =
                     match arg with
                     | Symbol(p),e -> p,ref (eval env' e)
-                    | o -> failwith (sprintf "Malformed lambda call at %A" (pos (fst o)))
+                    | o -> malformed "lambda call" (pos (fst o))
                 let env'' = List.map bind bindings |> extend env
                 eval env'' body
             Special(closure)
-        | o -> failwith (sprintf "Malformed lambda expression at %A" (pos (List.head args)))
+        | o -> malformed "lambda expression" (pos (List.head args))
     and letstar env = function
         | [List(bindings); body] ->
             let bind env binding = 
                 match binding with 
                 | List([Symbol(s); e]) -> [s, ref (eval env e)] |> extend env
-                | o -> failwith (sprintf "Malformed 'let*' bioding at %A." (pos o))
+                | o -> malformed "let* binding" (pos o)
             let env' = List.fold bind env bindings 
             eval env' body 
-        | o -> failwith (sprintf "Malformed 'let*' at %A." (pos (List.head o)))
-    and cons = function [h; List(t)] -> List(h :: t) | o -> sprintf "Malformed 'cons' at %A." (pos (List.head o)) |> failwith
-    and car = function [List(h :: _)] -> h | o -> sprintf "Malformed 'car' at %A." (pos (List.head o)) |> failwith
-    and cdr = function [List(_ :: t)] -> List(t) | o -> sprintf "Malformed 'cdr' at %A." (pos (List.head o)) |> failwith
+        | o -> malformed "let*" (pos (List.head o))
+    and cons = function [h; List(t)] -> List(h :: t) | o -> malformed "cons" (pos (List.head o))
+    and car = function [List(h :: _)] -> h | o -> malformed "car" (pos (List.head o))
+    and cdr = function [List(_ :: t)] -> List(t) | o -> malformed "cdr" (pos (List.head o))
     and lst args = List(args) 
     and quote env =
         let rec unquote expr =
             match expr with
             | List([Symbol("unquote"); e]) -> eval env e 
-            | List(Symbol("unquote") :: _) -> failwith (sprintf "Malformed 'unquote' at %A." (pos expr)) // too many args 
+            | List(Symbol("unquote") :: _) -> malformed "unquote" (pos expr) // too many args 
             | List(h :: t) -> List(h :: (List.map unquote t)) // recurse 
             | e -> e
-        function [e] -> unquote e | o -> failwith (sprintf "Malformed 'quote' at %A" (pos (List.head o)))
-    and eval' env = function [args] -> args |> eval env |> eval globalenvironment | o -> failwith (sprintf "Malformed 'eval' at %A." (pos (List.head o)))
+        function [e] -> unquote e | o -> malformed "quote" (pos (List.head o))
+    and eval' env = function [args] -> args |> eval env |> eval globalenvironment | o -> malformed "eval" (pos (List.head o))
     and macro env = function 
         | [List(parameters); body] -> 
             let closure env' args = 
                 // bind parameters to actual arguments (but unevaluated, unlike lambda) 
                 let bindings = List.zip parameters args 
-                let bind = function Symbol(p), a -> p, ref a | o -> failwith (sprintf "Malformed 'macro' parameter at %A." (pos (fst o))) 
+                let bind = function Symbol(p), a -> p, ref a | o -> malformed "macro" (pos (fst o))
                 let env'' = List.map bind bindings |> extend env // extend the captured definition-time environment 
                 eval env'' body |> eval env' // eval against bound args, then again in the caller's environment 
             Special(closure) 
-        | o -> failwith (sprintf "Malformed 'macro' at %A." (pos (List.head o)))
+        | o -> malformed "macro" (pos (List.head o))
     and set env args = 
         match args with
         | [Symbol(s); e] -> 
             (lookup (pos (List.head args)) env s) := eval env e 
             Dummy(sprintf "Set %s" s) 
-        | o -> failwith (sprintf "Malformed 'set!' at %A." (pos (List.head o)))
+        | o -> malformed "set!" (pos (List.head o))
     and begin' env = List.fold (fun _ e -> eval env e) (Dummy("Empty 'begin'"))
     and define' (env : Environment) = function 
         | [Symbol(s); e] -> 
@@ -152,7 +149,7 @@ let eval expr =
             env.Head := Map.add s def env.Head.Value 
             def := eval env e 
             Dummy(sprintf "Defined %s" s) 
-        | o -> failwith (sprintf "Malformed 'define' at %A." (pos (List.head o)))
+        | o -> malformed "define" (pos (List.head o))
     and globalenvironment = 
         [ ref (Map.ofList 
             [ 
