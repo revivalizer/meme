@@ -50,7 +50,7 @@ let main argv =
             echo |> sprintf "[F#]: %s" |> sw.WriteLine
 
             pipeServer.Disconnect()
-            //if true then loop()
+            if true then loop()
         with
         | _ as e -> printfn "[F#]ERROR: %s" e.Message
     loop()

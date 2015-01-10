@@ -27,11 +27,11 @@ int main(int argc,  char** argv)
 	DWORD  cbRead, cbToWrite, cbWritten, dwMode; 
 	cbToWrite; cbWritten; cbRead; dwMode;
 
-	char* message = "Hello World!\n";
+	char* message = "Hello World!\nabc";
 
-	/*HANDLE pipe = CreateFile("\\\\.\\pipe\\memeparser", GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+	/*
+	HANDLE pipe = CreateFile("\\\\.\\pipe\\memeparser", GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
 	fSuccess = (bool)WriteFile(pipe, message, zstrlen(message), &cbWritten, NULL); 
-	FlushFileBuffers(pipe);
 	CloseHandle(pipe);
 	*/
 
@@ -40,7 +40,7 @@ int main(int argc,  char** argv)
 	return GetLastError();
 	*/
 
-	HANDLE pipe = CreateFile("\\\\.\\pipe\\memeparser", GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+	HANDLE pipe = CreateFile("\\\\.\\pipe\\memeparser", GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	if (pipe == INVALID_HANDLE_VALUE)
 	{
@@ -92,4 +92,5 @@ int main(int argc,  char** argv)
 
 	} while (!fSuccess);  // repeat loop if ERROR_MORE_DATA 
 
+	CloseHandle(pipe);
 }
