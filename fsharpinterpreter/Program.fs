@@ -6,6 +6,7 @@ open ErrorHandling;
 open ErrorHandlingExtensions;
 open ParserTypes;
 open ParserLogic;
+open Export;
 open System;
 open System.IO
 open System.IO.Pipes
@@ -42,12 +43,14 @@ let main argv =
 
             // Read request from the stream. 
             //let echo = sr.ReadLine();
-            let echo = readMessage pipeServer
+            let str = readMessage pipeServer
 
-            printfn "[F#] Request message: %s" echo
+            printfn "[F#] Request message: %s" str
 
             // Write response to the stream.
-            echo |> sprintf "[F#]: %s" |> sw.WriteLine
+            //echo |> sprintf "[F#]: %s" |> sw.WriteLine
+            let r = strToBinaryRep str
+            pipeServer.Write (r, 0, (Array.length r))
 
             pipeServer.Disconnect()
             if true then loop()

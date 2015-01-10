@@ -130,7 +130,7 @@ let generateBinaryData (res : BinaryExpr) =
     writeList writer res.binaryExpr 2
     writeList writer (res.uniqueStrings |> mapToOrderedList |> List.map fst |> appendZeroTerminator |> toCharList) 1
     writeList writer (res.uniqueSymbols |> mapToOrderedList |> List.map fst |> appendZeroTerminator |> toCharList) 1
-    Success stream.GetBuffer
+    Success (stream.GetBuffer())
 
 let strToBinaryRep str =
     str |> parse expr |> bind analyzeUniques |> bind generateBinaryRepresentation |> bind generateBinaryData |> extractOrFail
