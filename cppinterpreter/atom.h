@@ -3,6 +3,7 @@
 typedef struct atom atom_t;
 
 typedef enum {
+	ATOM_BOOLEAN,
 	ATOM_NUMBER,
 	ATOM_STRING,
 	ATOM_SYMBOL,
@@ -17,6 +18,7 @@ typedef atom_t*(*func22)(atom_t *);
 struct atom {
 	atom_type_t type;
 	union {
+		bool boolean;
 		double number;
 		char *string;
 		char *symbol;
@@ -35,6 +37,9 @@ struct atom {
 
 extern atom_t *nil;
 ZINLINE bool no(atom* atom) { return atom == nil; }
+
+ZINLINE bool& boolean(atom* atom) { return atom->boolean; }
+atom_t* new_boolean(const bool boolean);
 
 ZINLINE double& number(atom* atom) { return atom->number; }
 atom_t *new_number(const double value);
@@ -72,3 +77,12 @@ atom_t *coerce_table(atom_t *value);
 
 ZINLINE func22& func(atom* atom) { return atom->func; }
 atom_t *new_builtin(atom_t *(*func)(atom_t *));
+
+// Type functions
+ZINLINE atom_type_t& type(atom* atom) { return atom->type; }
+ZINLINE bool isa(atom* atom, atom_type_t type_) { return type(atom)==type_; }
+ZINLINE bool isboolean(atom* atom) { return isa(atom, ATOM_BOOLEAN); }
+ZINLINE bool isnumber (atom* atom) { return isa(atom, ATOM_NUMBER); }
+ZINLINE bool isstring (atom* atom) { return isa(atom, ATOM_STRING); }
+ZINLINE bool issymbol (atom* atom) { return isa(atom, ATOM_SYMBOL); }
+ZINLINE bool iscons   (atom* atom) { return isa(atom, ATOM_CONS); }

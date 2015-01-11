@@ -9,6 +9,12 @@ atom_t *new_atom(const atom_type_t type) {
 	return result;
 }
 
+atom_t *new_boolean(const bool value) {
+	atom_t *result = new_atom(ATOM_BOOLEAN);
+	boolean(result) = value;
+	return result;
+}
+
 atom_t *new_number(const double value) {
 	atom_t *result = new_atom(ATOM_NUMBER);
 	number(result) = value;
