@@ -27,26 +27,26 @@ atom_t *new_symbol(const char *value) {
 	return result;
 }
 
-atom_t *new_cons(atom_t *car, atom_t *cdr) {
+atom_t *new_cons(atom_t *car_, atom_t *cdr_) {
 	atom_t *result = new_atom(ATOM_CONS);
-	car(result) = car;
-	cdr(result) = cdr;
+	car(result) = car_;
+	cdr(result) = cdr_;
 	return result;
 }
 
-atom_t *new_lambda(atom_t *args, atom_t *body, atom_t *env) {
+atom_t *new_lambda(atom_t *args_, atom_t *body_, atom_t *env_) {
 	atom_t *result = new_atom(ATOM_LAMBDA);
-	args(result) = args;
-	body(result) = body;
-	env(result) = env;
+	args(result) = args_;
+	body(result) = body_;
+	env(result) = env_;
 	return result;
 }
 
-atom_t *new_macro(atom_t *args, atom_t *body, atom_t *env) {
+atom_t *new_macro(atom_t *args_, atom_t *body_, atom_t *env_) {
 	atom_t *result = new_atom(ATOM_MACRO);
-	args(result) = args;
-	body(result) = body;
-	env(result) = env;
+	args(result) = args_;
+	body(result) = body_;
+	env(result) = env_;
 	return result;
 }
 
@@ -65,18 +65,18 @@ atom_t *new_macro(atom_t *args, atom_t *body, atom_t *env) {
 }
 */
 
-atom_t *new_builtin(atom_t *(*func)(atom_t *)) {
+atom_t *new_builtin(atom_t *(*func_)(atom_t *)) {
 	atom_t *result = new_atom(ATOM_BUILTIN);
-	func(result) = func;
+	func(result) = func_;
 	return result;
 }
 
 atom_t *symbol_table;
 
-atom_t *intern(const char *symbol) {
+atom_t *intern(const char *symbol_) {
 	atom_t *i;
 	for (i = symbol_table; !no(i); i = cdr(i))
-		if (!zstrcmp(symbol, symbol(car(i))))
+		if (!zstrcmp(symbol_, symbol(car(i))))
 			return car(i);
-	return car(symbol_table = cons(new_symbol(symbol), symbol_table));
+	return car(symbol_table = cons(new_symbol(symbol_), symbol_table));
 }
