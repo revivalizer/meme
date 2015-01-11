@@ -65,7 +65,7 @@ let generateBinaryRepresentation (res : AnalyzedExpr) =
         | Number(_, n)   -> [uint16(NodeType.Number); res.uniqueNumbers.[n]]
         | List(_, l)     -> [uint16(NodeType.List)] @ (l |> List.map generate |> List.concat) @ [uint16(NodeType.EOC)]
     Success {
-        binaryExpr = (generate res.expr) @ [uint16(NodeType.EOC)]
+        binaryExpr = (generate res.expr)
         expr = res.expr
         uniqueStrings = res.uniqueStrings
         uniqueSymbols = res.uniqueSymbols

@@ -27,9 +27,14 @@ enum NodeType // this must match F# enum, of course
 	Number,
 };
 
+Node next(Node** node)
+{
+	return *((*node)++);
+}
+
 atom_t* deserialize(Node** node, ExtendedBinaryExpression* expr, Environment* env)
 {
-	switch (**node)
+	switch (next(node))
 	{
 		case EOC:
 			return nullptr;
@@ -58,16 +63,13 @@ atom_t* deserialize(Node** node, ExtendedBinaryExpression* expr, Environment* en
 			break;
 		}
 		case String:
-			*node++;
-			return new_string(expr->strings[*(*node++)]);
+			return new_string(expr->strings[next(node)]);
 			break;
 		case Symbol:
-			*node++;
-			return new_symbol(expr->symbols[*(*node++)]);
+			return new_symbol(expr->symbols[next(node)]);
 			break;
 		case Number:
-			*node++;
-			return new_number(expr->numbers[*(*node++)]);
+			return new_number(expr->numbers[next(node)]);
 			break;
 	}
 
