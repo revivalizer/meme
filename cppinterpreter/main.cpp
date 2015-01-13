@@ -29,6 +29,7 @@ int main(int argc,  char** argv)
 	atom* e = deserialize(&idp, extend(unpack(nullptr)), nullptr);
 	return int(e) & 2;
 */
+	ZASSERT(argc==1)
 	size_t outSize = 1024*128;
 	uint8_t* out = new uint8_t[outSize];
 	BinaryExpression* raw = convertBinaryRepresentation("1", out, outSize);

@@ -28,14 +28,20 @@ solution "memecpp"
 	defines { "_CRT_SECURE_NO_WARNINGS" }
 
 	includedirs { "../../64klibs" }
+	includedirs { "$(SolutionDir)/../config" }
 
 	location "build"
+
+	filter "configurations:*Standalone"
+		defines { "STANDALONE" }
+	filter {}
 
 	project "memecpp"
 		kind "WindowedApp"
 		targetname "memecpp"
 
 		files { "*.h", "*.cpp" }
+		files { "config/config.h" }
 		files { "notes.txt" }
 
 		links { "base" }
