@@ -25,6 +25,30 @@ BinaryExpression* convertBinaryRepresentation(char* str, uint8_t* out, size_t ou
 	return (BinaryExpression*)out;
 }
 
+void IterateDir(const char* const relativePath)
+{
+	char absolutePath[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH, absolutePath);
+	zstrcat(absolutePath, "\\");
+	zstrcat(absolutePath, relativePath);
+	zstrcat(absolutePath, "*");
+	relativePath;
+
+	WIN32_FIND_DATA ffd;
+	HANDLE hFind = FindFirstFile(absolutePath, &ffd);
+
+	do
+	{
+		if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+		{
+			zmsg(ffd.cFileName);
+		}
+	}
+	while (FindNextFile(hFind, &ffd) != 0);
+	
+	FindClose(hFind);
+}
+
 int main(int argc,  char** argv)
 {
 	argv; argc;
@@ -34,6 +58,9 @@ int main(int argc,  char** argv)
 	atom* e = deserialize(&idp, extend(unpack(nullptr)), nullptr);
 	return int(e) & 2;
 */
+	//IterateDir("..\\test\\unittests");
+	IterateDir("");
+
 	size_t outSize = 1024*128;
 	uint8_t* out = new uint8_t[outSize];
 	BinaryExpression* raw = convertBinaryRepresentation("1", out, outSize);
