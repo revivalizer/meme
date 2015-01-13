@@ -16,7 +16,12 @@ void * __cdecl memset(void *pTarget, int value, size_t cbTarget) {
 BinaryExpression* convertBinaryRepresentation(char* str, uint8_t* out, size_t outSize)
 {
 	DWORD cbRead;
-	CallNamedPipeA("\\\\.\\pipe\\memeparser", str, zstrlen(str), out, outSize, &cbRead, 100);
+	BOOL fSuccess = CallNamedPipeA("\\\\.\\pipe\\memeparser", str, zstrlen(str), out, outSize, &cbRead, 100);
+
+	if (fSuccess==0)
+	{
+		zfatalerror("Could not open named pipe!");
+	}
 	return (BinaryExpression*)out;
 }
 
@@ -29,7 +34,6 @@ int main(int argc,  char** argv)
 	atom* e = deserialize(&idp, extend(unpack(nullptr)), nullptr);
 	return int(e) & 2;
 */
-	ZASSERT(argc==1)
 	size_t outSize = 1024*128;
 	uint8_t* out = new uint8_t[outSize];
 	BinaryExpression* raw = convertBinaryRepresentation("1", out, outSize);
