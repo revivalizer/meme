@@ -61,11 +61,42 @@ atom* Parse(const char* const str)
 	return result;
 }
 
+struct iter
+{
+	iter(atom* list) { this->cur = list; }
+
+	atom* cur;
+
+	atom* operator() ()
+	{
+		if (cur==nil) return nil;
+
+		atom* c = cur;
+		cur = cdr(cur);
+		return car(c);
+	}
+};
+
+void RunTest(atom* test)
+{
+	atom* expr = car(test);
+	atom* expected = car(cdr(test));
+}
+
 void RunTestsInFile(const char* const path)
 {
 	char* data = LoadFile(path);
 	atom* tests = Parse(data);
-	tests;
+
+	iter testiter(tests);
+
+	while (atom* test = testiter())
+	{
+		if (test==nil)
+			return;
+
+		RunTest(test);
+	}
 }
 
 void RunTestsInDir(const char* const relativePath)
