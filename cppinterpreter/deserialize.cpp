@@ -47,7 +47,7 @@ atom_t* deserialize(Node** node, ExtendedBinaryExpression* expr, Environment* en
 
 			while ((n = deserialize(node, expr, env)) != nullptr)
 			{
-				if (cur==nil)
+				if (car(cur)==nil)
 				{
 					car(cur) = n;
 				}
