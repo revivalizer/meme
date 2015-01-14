@@ -13,10 +13,10 @@ void * __cdecl memset(void *pTarget, int value, size_t cbTarget) {
 
 #pragma warning(disable:4800)
 
-BinaryExpression* convertBinaryRepresentation(char* str, uint8_t* out, size_t outSize)
+BinaryExpression* convertBinaryRepresentation(const char* const str, uint8_t* out, size_t outSize)
 {
 	DWORD cbRead;
-	BOOL fSuccess = CallNamedPipeA("\\\\.\\pipe\\memeparser", str, zstrlen(str), out, outSize, &cbRead, 100);
+	BOOL fSuccess = CallNamedPipeA("\\\\.\\pipe\\memeparser", LPVOID(str), zstrlen(str), out, outSize, &cbRead, 100);
 
 	if (fSuccess==0)
 	{
@@ -25,7 +25,50 @@ BinaryExpression* convertBinaryRepresentation(char* str, uint8_t* out, size_t ou
 	return (BinaryExpression*)out;
 }
 
-void IterateDir(const char* const relativePath)
+char* LoadFile(const char* const path)
+{
+	HANDLE hFile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+	char* data = nullptr;
+
+	if (hFile==INVALID_HANDLE_VALUE)
+		zfatalerror("Couldn't open file %s", path);
+
+	LARGE_INTEGER size;
+	GetFileSizeEx(hFile, &size);
+
+	// Just leak memory for now
+	data = (char*)zalignedalloc(size.LowPart+1, 4);
+	((char*)data)[size.LowPart] = '\0'; // append zero for easy text handling
+
+	DWORD  dwBytesRead = 0;
+
+	ReadFile(hFile, data, size.LowPart, &dwBytesRead, NULL);
+
+	CloseHandle(hFile);
+	return data;
+}
+
+atom* Parse(const char* const str)
+{
+	// Just leak memory for now
+	size_t outSize = 1024*128;
+	uint8_t* out = new uint8_t[outSize];
+	BinaryExpression* raw = convertBinaryRepresentation(str, out, outSize);
+	BinaryExpression* unpacked = unpack(raw);
+	ExtendedBinaryExpression* extended = extend(unpacked);
+	atom* result = deserialize(&(extended->treeDescriptors), extended, nullptr);
+	return result;
+}
+
+void RunTestsInFile(const char* const path)
+{
+	char* data = LoadFile(path);
+	atom* tests = Parse(data);
+	tests;
+}
+
+void RunTestsInDir(const char* const relativePath)
 {
 	char absolutePath[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH, absolutePath);
@@ -41,7 +84,12 @@ void IterateDir(const char* const relativePath)
 	{
 		if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 		{
-			zmsg(ffd.cFileName);
+			GetCurrentDirectory(MAX_PATH, absolutePath);
+			zstrcat(absolutePath, "\\");
+			zstrcat(absolutePath, relativePath);
+			zstrcat(absolutePath, ffd.cFileName);
+
+			RunTestsInFile(absolutePath);
 		}
 	}
 	while (FindNextFile(hFind, &ffd) != 0);
@@ -58,8 +106,7 @@ int main(int argc,  char** argv)
 	atom* e = deserialize(&idp, extend(unpack(nullptr)), nullptr);
 	return int(e) & 2;
 */
-	//IterateDir("..\\test\\unittests");
-	IterateDir("");
+	RunTestsInDir("..\\test\\unittests\\");
 
 	size_t outSize = 1024*128;
 	uint8_t* out = new uint8_t[outSize];
