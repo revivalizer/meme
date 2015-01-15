@@ -77,6 +77,19 @@ struct iter
 	}
 };
 
+atom* eval(atom* expr)
+{
+	if (isnumber(expr)) 
+		return expr;
+	else if (isstring(expr))
+		return expr;
+}
+
+bool structural_equality(atom* expr1, atom* expr2)
+{
+
+}
+
 void RunTest(atom* test)
 {
 	atom* expr = car(test);
