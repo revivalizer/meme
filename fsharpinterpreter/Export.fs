@@ -120,9 +120,9 @@ let generateBinaryData (res : BinaryExpr) =
     let mapToOrderedList (map : Map<'a, uint16>) =
         Map.toList map |> List.sortBy (fun (key, v) -> v)
     let appendZeroTerminator list =
-        list |> List.map (fun str -> str + "\0")
+        list |> List.map (fun str -> str + System.Text.Encoding.ASCII.GetString([|0uy;|]))
     let toCharList strList =
-        strList |> List.fold (fun state s -> state @ [for c in s -> c]) [] 
+        strList |> List.fold (fun state s -> state @ [for c in s -> uint8(c)]) [] 
     let stream = new MemoryStream()
     let writer = new BinaryWriter(stream, System.Text.Encoding.ASCII)
     writeHeader writer res

@@ -88,6 +88,9 @@ atom* RunTest(atom* test)
 	atom* expr = car(test);
 	atom* expected = car(cdr(test));
 
+	// NEXT
+	// both expr and expected should be parsed before sending over
+
 	atom* result = Eval(expr);
 
 	bool success = StructuralEquality(result, expected);
