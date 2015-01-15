@@ -1,6 +1,4 @@
-#include "base/base.h"
-#include "atom.h"
-#include "deserialize.h"
+#include "pch.h"
 
 #pragma function(memset)
 void * __cdecl memset(void *pTarget, int value, size_t cbTarget) {
@@ -61,55 +59,79 @@ atom* Parse(const char* const str)
 	return result;
 }
 
-struct iter
-{
-	iter(atom* list) { this->cur = list; }
-
-	atom* cur;
-
-	atom* operator() ()
-	{
-		if (cur==nil) return nil;
-
-		atom* c = cur;
-		cur = cdr(cur);
-		return car(c);
-	}
-};
-
-atom* eval(atom* expr)
+atom* Eval(atom* expr)
 {
 	if (isnumber(expr)) 
 		return expr;
 	else if (isstring(expr))
 		return expr;
+
+	return nil;
 }
 
-bool structural_equality(atom* expr1, atom* expr2)
+bool StructuralEquality(atom* expr1, atom* expr2)
 {
+	if (type(expr1)!=type(expr2))
+		return false;
 
+	if (isnumber(expr1) && number(expr1)==number(expr2))
+		return true;
+
+	if (isstring(expr1) && zstrequal(string(expr1), string(expr2)))
+		return true;
+
+	return false;
 }
 
-void RunTest(atom* test)
+char errorDescBuf[2048];
+
+atom* RunTest(atom* test)
 {
 	atom* expr = car(test);
 	atom* expected = car(cdr(test));
+
+	atom* result = Eval(expr);
+
+	bool success = StructuralEquality(result, expected);
+
+	/*if (!success)
+	{
+		errorDescBuf[0] = '\0';
+		zstrcat(errorDescBuf, "Test FAILED in ");
+		zstrcat(errorDescBuf, filename);
+		zstrcat(errorDescBuf, "\n");
+		zstrcat(errorDescBuf, string(expr));
+		zstrcat(errorDescBuf, " did not result in ");
+		zstrcat(errorDescBuf, string());
+	}*/
+	
+	return cons(new_boolean(success), cons(expr, cons(expected, cons(result, nil))));
 }
 
-void RunTestsInFile(const char* const path)
+atom* RunTestsInFile(const char* const path)
 {
 	char* data = LoadFile(path);
 	atom* tests = Parse(data);
 
 	iter testiter(tests);
 
+	bool accSuccess = true;
+
 	while (atom* test = testiter())
 	{
 		if (test==nil)
-			return;
+			return nil;
 
-		RunTest(test);
+		bool success = RunTest(test);
+		accSuccess &= success;
+
+		if (!success)
+		{
+			errorDescBuf[0] = '\0';
+		}
 	}
+
+	return nil;
 }
 
 void RunTestsInDir(const char* const relativePath)

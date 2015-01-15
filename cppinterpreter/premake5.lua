@@ -40,6 +40,9 @@ solution "memecpp"
 		kind "WindowedApp"
 		targetname "memecpp"
 
+		pchheader "pch.h"
+		pchsource "pch.cpp"
+
 		files { "*.h", "*.cpp" }
 		files { "config/config.h" }
 		files { "notes.txt" }
