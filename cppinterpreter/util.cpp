@@ -1,17 +1,20 @@
 #include "pch.h"
 
-atom* InPlaceReverse(atom* list)
+atom* ReverseInPlace(atom* list)
 {
 	iter listiter(list);
 
-	atom* cur = nil;
+	atom* result = nil;
+	atom* cur = list;
 
-	while (atom* e = listiter())
+	while (cur)
 	{
-		cdr(e) = cur;
-		cur = e;
+		auto next = cdr(cur);
+		cdr(cur) = result;
+		result = cur;
+		cur = next;
 	}
 
-	return cur;
+	return result;
 }
 

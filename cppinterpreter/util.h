@@ -18,3 +18,4 @@ struct iter
 	}
 };
 
+atom* ReverseInPlace(atom* list);

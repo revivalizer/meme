@@ -83,8 +83,6 @@ bool StructuralEquality(atom* expr1, atom* expr2)
 	return false;
 }
 
-char errorDescBuf[2048];
-
 atom* RunTest(atom* test)
 {
 	atom* expr = car(test);
@@ -94,17 +92,6 @@ atom* RunTest(atom* test)
 
 	bool success = StructuralEquality(result, expected);
 
-	/*if (!success)
-	{
-		errorDescBuf[0] = '\0';
-		zstrcat(errorDescBuf, "Test FAILED in ");
-		zstrcat(errorDescBuf, filename);
-		zstrcat(errorDescBuf, "\n");
-		zstrcat(errorDescBuf, string(expr));
-		zstrcat(errorDescBuf, " did not result in ");
-		zstrcat(errorDescBuf, string());
-	}*/
-	
 	return cons(new_boolean(success), cons(expr, cons(expected, cons(result, nil))));
 }
 
@@ -115,26 +102,17 @@ atom* RunTestsInFile(const char* const path)
 
 	iter testiter(tests);
 
-	bool accSuccess = true;
+	atom* result = nil;
 
 	while (atom* test = testiter())
 	{
-		if (test==nil)
-			return nil;
-
-		bool success = RunTest(test);
-		accSuccess &= success;
-
-		if (!success)
-		{
-			errorDescBuf[0] = '\0';
-		}
+		result = cons(RunTest(test), result);
 	}
 
-	return nil;
+	return ReverseInPlace(result);
 }
 
-void RunTestsInDir(const char* const relativePath)
+atom* RunTestsInDir(const char* const relativePath)
 {
 	char absolutePath[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH, absolutePath);
@@ -146,6 +124,8 @@ void RunTestsInDir(const char* const relativePath)
 	WIN32_FIND_DATA ffd;
 	HANDLE hFind = FindFirstFile(absolutePath, &ffd);
 
+	atom* result = nil;
+
 	do
 	{
 		if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
@@ -155,12 +135,69 @@ void RunTestsInDir(const char* const relativePath)
 			zstrcat(absolutePath, relativePath);
 			zstrcat(absolutePath, ffd.cFileName);
 
-			RunTestsInFile(absolutePath);
+			result = cons(cons(new_string(ffd.cFileName), RunTestsInFile(absolutePath)), result);
 		}
 	}
 	while (FindNextFile(hFind, &ffd) != 0);
 	
 	FindClose(hFind);
+
+	return ReverseInPlace(result);
+}
+
+void PrintVerboseTestResult(atom* result)
+{
+	char errorDescBuf[2048];
+
+	auto fileiter = iter(result);
+
+	bool dirSuccess = true;
+
+	// For all files
+	while (auto file = fileiter())
+	{
+		auto filename = string(car(file));
+		auto fileresults = cdr(file);
+
+		auto testiter = iter(fileresults);
+
+		bool fileSuccess = true;
+
+		// For all tests
+		while (auto test = testiter())
+		{
+			// Get results
+			bool success = boolean(car(test));
+			auto expr = string(car(cdr(test)));
+			auto expected = string(car(cdr(cdr(test))));
+
+			dirSuccess &= success;
+			fileSuccess &= success;
+
+			// Print error if neccesary
+			if (!success)
+			{
+				errorDescBuf[0] = '\0';
+				zstrcat(errorDescBuf, filename);
+				zstrcat(errorDescBuf, ": Test FAILED\n");
+				zstrcat(errorDescBuf, expr);
+				zstrcat(errorDescBuf, " did not match ");
+				zstrcat(errorDescBuf, expected);
+
+				zmsg(errorDescBuf);
+			}
+		}
+
+		if (fileSuccess)
+			zmsg("%s: all tests passed", filename);
+	}
+
+	if (dirSuccess)
+		zmsg("ALL TESTS PASSED.");
+	else
+		zmsg("SOME TESTS FAILED.");
+
+	zmsg("Done.");
 }
 
 int main(int argc,  char** argv)
@@ -172,7 +209,7 @@ int main(int argc,  char** argv)
 	atom* e = deserialize(&idp, extend(unpack(nullptr)), nullptr);
 	return int(e) & 2;
 */
-	RunTestsInDir("..\\test\\unittests\\");
+	PrintVerboseTestResult(RunTestsInDir("..\\test\\unittests\\"));
 
 	size_t outSize = 1024*128;
 	uint8_t* out = new uint8_t[outSize];

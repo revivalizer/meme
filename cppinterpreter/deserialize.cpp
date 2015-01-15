@@ -39,25 +39,15 @@ atom_t* deserialize(Node** node, ExtendedBinaryExpression* expr, Environment* en
 			break;
 		case List:
 		{
-			atom_t* n;
-			atom_t *list = cons(nil, nil);
-			atom_t *cur = list;
+			atom* n;
+			atom_t *cur = nil;
 
 			while ((n = deserialize(node, expr, env)) != nullptr)
 			{
-				if (car(cur)==nil)
-				{
-					car(cur) = n;
-				}
-				else
-				{
-					atom_t* next = cons(n, nil);
-					cdr(cur) = next;
-					cur = next;
-				}
+				cur = cons(n, cur);
 			}
 
-			return list;
+			return ReverseInPlace(cur);
 			break;
 		}
 		case String:
