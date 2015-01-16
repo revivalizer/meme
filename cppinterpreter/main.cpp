@@ -85,8 +85,8 @@ bool StructuralEquality(atom* expr1, atom* expr2)
 
 atom* RunTest(atom* test)
 {
-	atom* expr = car(test);
-	atom* expected = car(cdr(test));
+	atom* expr = Parse(string(car(test)));
+	atom* expected = Parse(string(car(cdr(test))));
 
 	// NEXT
 	// both expr and expected should be parsed before sending over
@@ -182,10 +182,11 @@ void PrintVerboseTestResult(atom* result)
 			{
 				errorDescBuf[0] = '\0';
 				zstrcat(errorDescBuf, filename);
-				zstrcat(errorDescBuf, ": Test FAILED\n");
+				zstrcat(errorDescBuf, ": Test FAILED\n\"");
 				zstrcat(errorDescBuf, expr);
-				zstrcat(errorDescBuf, " did not match ");
+				zstrcat(errorDescBuf, "\" did evaluate to \"");
 				zstrcat(errorDescBuf, expected);
+				zstrcat(errorDescBuf, "\"");
 
 				zmsg(errorDescBuf);
 			}
