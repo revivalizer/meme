@@ -28,7 +28,5 @@ typedef struct atom atom_t;
 struct Environment;
 typedef uint16_t Node;
 
-
-BinaryExpression* unpack(BinaryExpression* expr);
-ExtendedBinaryExpression* extend(BinaryExpression* expr);
-atom_t* deserialize(Node** node, ExtendedBinaryExpression* expr, Environment* env);
+ExtendedBinaryExpression* Unpack(BinaryExpression* blob);
+atom_t* Deserialize(ExtendedBinaryExpression* expr);

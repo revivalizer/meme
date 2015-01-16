@@ -1,4 +1,7 @@
 #include "base/base.h"
 #include "atom.h"
 #include "util.h"
+#include "eval.h"
 #include "deserialize.h"
+#include "parse.h"
+#include "test/unittest.h"

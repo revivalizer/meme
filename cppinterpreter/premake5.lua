@@ -46,6 +46,8 @@ solution "memecpp"
 		files { "*.h", "*.cpp" }
 		files { "config/config.h" }
 		files { "notes.txt" }
+		files { "test/unittests/*" }
+		files { "test/*" }
 
 		links { "base" }
 		links { "startup" }

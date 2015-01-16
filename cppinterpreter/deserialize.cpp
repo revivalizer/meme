@@ -92,3 +92,14 @@ ExtendedBinaryExpression* extend(BinaryExpression* expr)
 
 	return newexpr;
 }
+
+ExtendedBinaryExpression* Unpack(BinaryExpression* blob)
+{
+	return extend(unpack(blob));
+}
+
+atom_t* Deserialize(ExtendedBinaryExpression* expr)
+{
+	Node* nodes = expr->treeDescriptors;
+	return deserialize(&nodes, expr, nullptr);
+}
