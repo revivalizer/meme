@@ -35,6 +35,8 @@ struct atom {
 	};
 };
 
+typedef struct atom atom_t;
+
 extern atom_t *nil;
 ZINLINE bool no(atom* atom) { return atom == nil; }
 

@@ -7,7 +7,9 @@ char* LoadFile(const char* const path)
 	char* data = nullptr;
 
 	if (hFile==INVALID_HANDLE_VALUE)
+	{
 		zfatalerror("Couldn't open file %s", path);
+	}
 
 	LARGE_INTEGER size;
 	GetFileSizeEx(hFile, &size);

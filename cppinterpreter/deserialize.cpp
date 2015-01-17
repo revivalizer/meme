@@ -30,7 +30,7 @@ Node next(Node** node)
 	return *((*node)++);
 }
 
-atom_t* deserialize(Node** node, ExtendedBinaryExpression* expr, Environment* env)
+atom_t* deserialize(Node** node, ExtendedBinaryExpression* expr)
 {
 	switch (next(node))
 	{
@@ -42,7 +42,7 @@ atom_t* deserialize(Node** node, ExtendedBinaryExpression* expr, Environment* en
 			atom* n;
 			atom_t *cur = nil;
 
-			while ((n = deserialize(node, expr, env)) != nullptr)
+			while ((n = deserialize(node, expr)) != nullptr)
 			{
 				cur = cons(n, cur);
 			}
@@ -101,5 +101,5 @@ ExtendedBinaryExpression* Unpack(BinaryExpression* blob)
 atom_t* Deserialize(ExtendedBinaryExpression* expr)
 {
 	Node* nodes = expr->treeDescriptors;
-	return deserialize(&nodes, expr, nullptr);
+	return deserialize(&nodes, expr);
 }
