@@ -19,3 +19,5 @@ struct iter
 };
 
 atom* ReverseInPlace(atom* list);
+
+uint32_t ListLength(atom_t* list);

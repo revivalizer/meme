@@ -18,3 +18,24 @@ atom* ReverseInPlace(atom* list)
 	return result;
 }
 
+uint32_t ListLength(atom_t* list)
+{
+	if (iscons(list))
+	{
+		if (car(list)==nil)
+			return 0;
+
+		uint32_t length = 0;
+
+		auto listiter = iter(list);
+
+		while (listiter())
+			length++;
+
+		return length;
+	}
+	else
+	{
+		return 0;
+	}
+}

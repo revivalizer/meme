@@ -28,17 +28,16 @@ char* LoadFile(const char* const path)
 
 atom* RunTest(atom* test)
 {
-	atom* expr = Parse(string(car(test)));
-	atom* expected = Parse(string(car(cdr(test))));
+	atom* exprStr = car(test);
+	atom* expectedStr = car(cdr(test));
+	atom* expr = Parse(string(exprStr));
+	atom* expected = Parse(string(expectedStr));
 
-	// NEXT
-	// both expr and expected should be parsed before sending over
-
-	atom* result = Eval(expr);
+	atom* result = Eval(expr, CreateGlobalEnvironment());
 
 	bool success = StructuralEquality(result, expected);
 
-	return cons(new_boolean(success), cons(expr, cons(expected, cons(result, nil))));
+	return cons(new_boolean(success), cons(exprStr, cons(expectedStr, cons(result, nil))));
 }
 
 atom* RunTestsInFile(const char* const path)
@@ -125,9 +124,9 @@ void PrintVerboseTestResult(atom* result)
 			{
 				errorDescBuf[0] = '\0';
 				zstrcat(errorDescBuf, filename);
-				zstrcat(errorDescBuf, ": Test FAILED\n\"");
+				zstrcat(errorDescBuf, ": test FAILED\n\"");
 				zstrcat(errorDescBuf, expr);
-				zstrcat(errorDescBuf, "\" did evaluate to \"");
+				zstrcat(errorDescBuf, "\" did not evaluate to \"");
 				zstrcat(errorDescBuf, expected);
 				zstrcat(errorDescBuf, "\"");
 

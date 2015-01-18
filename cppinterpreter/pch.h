@@ -1,6 +1,7 @@
 #include "base/base.h"
 #include "atom.h"
 #include "util.h"
+#include "builtins.h"
 #include "environment.h"
 #include "eval.h"
 #include "deserialize.h"

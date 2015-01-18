@@ -1,2 +1,2 @@
-atom* Eval(atom* expr);
-bool StructuralEquality(atom* expr1, atom* expr2);
+atom* Eval(atom_t* expr, environment_t* env);
+bool StructuralEquality(atom_t* expr1, atom_t* expr2);

@@ -13,7 +13,7 @@ typedef enum {
 	ATOM_BUILTIN,
 } atom_type_t;
 
-typedef atom_t*(*func22)(atom_t *);
+typedef atom_t*(*builtin_func)(atom_t *);
 
 struct atom {
 	atom_type_t type;
@@ -30,7 +30,7 @@ struct atom {
 		};
 		//atom_t *table;
 		struct { // builtin
-			func22 func;
+			builtin_func func;
 		};
 	};
 };
@@ -77,7 +77,7 @@ atom_t *new_table(atom_t *entries);
 atom_t *coerce_table(atom_t *value);
 */
 
-ZINLINE func22& func(atom* atom) { return atom->func; }
+ZINLINE builtin_func& func(atom* atom) { return atom->func; }
 atom_t *new_builtin(atom_t *(*func)(atom_t *));
 
 // Type functions
@@ -88,3 +88,4 @@ ZINLINE bool isnumber (atom* atom) { return isa(atom, ATOM_NUMBER); }
 ZINLINE bool isstring (atom* atom) { return isa(atom, ATOM_STRING); }
 ZINLINE bool issymbol (atom* atom) { return isa(atom, ATOM_SYMBOL); }
 ZINLINE bool iscons   (atom* atom) { return isa(atom, ATOM_CONS); }
+ZINLINE bool isbuiltin(atom* atom) { return isa(atom, ATOM_BUILTIN); }

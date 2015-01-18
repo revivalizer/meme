@@ -26,3 +26,12 @@ atom_t* lookup(environment_t* env, atom* s)
 	zcriticalerror("No binding for '%s'", str);
 	return nil;
 }
+
+environment_t* CreateGlobalEnvironment()
+{
+	atom_t* env = nil;
+	env = cons(cons(new_symbol("-"), new_builtin(BuiltinSub)), env);
+	env = cons(cons(new_symbol("*"), new_builtin(BuiltinMul)), env);
+
+	return cons(env, nil);
+}
