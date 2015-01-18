@@ -4,3 +4,9 @@ Base size w/ crinkler in Release mode
 
 With untested/unoptimized deserialization
 1144
+
+Core
+1579
+
+Let
+1654

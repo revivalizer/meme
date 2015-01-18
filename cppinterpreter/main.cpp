@@ -6,5 +6,5 @@ int main(int argc,  char** argv)
 
 	RunUnitTests();
 	//auto r = Deserialize(Unpack(nullptr));
-	//return (uintptr_t)r & 1;
+	//return int(Eval(r, CreateGlobalEnvironment()));
 }
