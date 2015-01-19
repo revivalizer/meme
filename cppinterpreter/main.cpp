@@ -4,7 +4,10 @@ int main(int argc,  char** argv)
 {
 	argv; argc;
 
+#ifndef STANDALONE
 	RunUnitTests();
-	//auto r = Deserialize(Unpack(nullptr));
-	//return int(Eval(r, CreateGlobalEnvironment()));
+#else
+	auto r = Deserialize(Unpack(nullptr));
+	return int(Eval(r, CreateGlobalEnvironment()));
+#endif
 }
