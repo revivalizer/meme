@@ -67,6 +67,15 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 
 				return Eval(body, extend(env, ReverseInPlace(evalbindings)));
 			}
+			else if (zstrequal(symbol(fn), "lambda"))
+			{
+				ZASSERT(ListLength(args)==2)
+
+				auto parameters = car(args);
+				auto body = car(cdr(args));
+
+				return new_lambda(parameters, body, env);
+			}
 		}
 
 		// Eval fn
@@ -89,17 +98,29 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 
 atom_t* Apply(atom_t* fn, atom_t* args)
 {
-	ZASSERT(isbuiltin(fn));
+	ZASSERT(isbuiltin(fn) || islambda(fn));
 	if (isbuiltin(fn))
+	{
 		return (func(fn))(args);
-/*	if isfunctionbuiltin
-		call args
-	else
-		fail
-		*/
+	}
+	else if (islambda(fn))
+	{
+		ZASSERT(ListLength(args)==ListLength(parameters(fn)))
+
+		auto evalbindings = nil;
+		auto parameteriter = iter(parameters(fn));
+		auto argiter = iter(args);
+
+		while (auto parameter = parameteriter())
+		{
+			auto arg = argiter();
+			evalbindings = cons(cons(parameter, arg), evalbindings);
+		}
+
+		return Eval(body(fn), extend(environment(fn), ReverseInPlace(evalbindings))); // body is evaluated in the environment where it was defined, exteneded with arguments evaluated in the calling environment
+	}
 
 	return nil;
-
 }
 
 bool StructuralEquality(atom* expr1, atom* expr2)

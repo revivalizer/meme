@@ -39,19 +39,19 @@ atom_t *new_cons(atom_t *car_, atom_t *cdr_) {
 	return result;
 }
 
-atom_t *new_lambda(atom_t *args_, atom_t *body_, atom_t *env_) {
+atom_t *new_lambda(atom_t *parameters_, atom_t *body_, atom_t *env_) {
 	atom_t *result = new_atom(ATOM_LAMBDA);
-	args(result) = args_;
+	parameters(result) = parameters_;
 	body(result) = body_;
-	env(result) = env_;
+	environment(result) = env_;
 	return result;
 }
 
-atom_t *new_macro(atom_t *args_, atom_t *body_, atom_t *env_) {
+atom_t *new_macro(atom_t *parameters_, atom_t *body_, atom_t *env_) {
 	atom_t *result = new_atom(ATOM_MACRO);
-	args(result) = args_;
+	parameters(result) = parameters_;
 	body(result) = body_;
-	env(result) = env_;
+	environment(result) = env_;
 	return result;
 }
 

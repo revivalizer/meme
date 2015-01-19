@@ -26,7 +26,7 @@ struct atom {
 			atom_t *car, *cdr;
 		};
 		struct { // lambda & macro
-			atom_t *args, *body, *env;
+			atom_t *parameters, *body, *env;
 		};
 		//atom_t *table;
 		struct { // builtin
@@ -62,11 +62,11 @@ atom_t *new_cons(atom_t *car, atom_t *cdr);
 atom_t *coerce_cons(atom_t *value);
 ZINLINE atom* cons(atom* car, atom* cdr) { return new_cons(car, cdr); }
 
-ZINLINE atom*& args(atom* atom) { return atom->args; }
-ZINLINE atom*& body(atom* atom) { return atom->body; }
-ZINLINE atom*& env(atom* atom) { return atom->env; }
-atom_t *new_lambda(atom_t *args, atom_t *body, atom_t *env);
-atom_t *new_macro(atom_t *args, atom_t *body, atom_t *env);
+ZINLINE atom*& parameters(atom* atom)         { return atom->parameters; }
+ZINLINE atom*& body(atom* atom)               { return atom->body; }
+ZINLINE atom*& environment(atom* atom)        { return atom->env; }
+atom_t *new_lambda(atom_t *parameters, atom_t *body, atom_t *env);
+atom_t *new_macro(atom_t *parameters, atom_t *body, atom_t *env);
 
 /*#define tag(atom) ((atom)->tag)
 #define rep(atom) ((atom)->rep)
@@ -89,3 +89,4 @@ ZINLINE bool isstring (atom* atom) { return isa(atom, ATOM_STRING); }
 ZINLINE bool issymbol (atom* atom) { return isa(atom, ATOM_SYMBOL); }
 ZINLINE bool iscons   (atom* atom) { return isa(atom, ATOM_CONS); }
 ZINLINE bool isbuiltin(atom* atom) { return isa(atom, ATOM_BUILTIN); }
+ZINLINE bool islambda (atom* atom) { return isa(atom, ATOM_LAMBDA); }
