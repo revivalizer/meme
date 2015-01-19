@@ -104,6 +104,29 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 
 				return Eval(body, dummyenvironment);
 			}
+			else if (zstrequal(symbol(fn), "let*"))
+			{
+				ZASSERT(ListLength(args)==2)
+
+				auto bindings = car(args);
+				auto body = car(cdr(args));
+
+				ZASSERT(iscons(bindings))
+				ZASSERT(body!=nil)
+
+				auto evalbindings = nil;
+				auto bindingiter = iter(bindings);
+
+				auto extendedenv = env;
+
+				while (auto binding = bindingiter())
+				{
+					evalbindings = cons(cons(car(binding), Eval(car(cdr(binding)), extendedenv)), evalbindings);
+					extendedenv  = extend(env, ReverseInPlace(evalbindings));
+				}
+
+				return Eval(body, extend(env, ReverseInPlace(evalbindings)));
+			}
 			else if (zstrequal(symbol(fn), "lambda"))
 			{
 				ZASSERT(ListLength(args)==2)
