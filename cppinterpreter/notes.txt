@@ -13,3 +13,6 @@ Let
 
 Lambda
 1728
+
+letrec
+1800

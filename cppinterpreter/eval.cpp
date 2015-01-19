@@ -67,6 +67,43 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 
 				return Eval(body, extend(env, ReverseInPlace(evalbindings)));
 			}
+			else if (zstrequal(symbol(fn), "letrec"))
+			{
+				ZASSERT(ListLength(args)==2)
+
+				auto bindings = car(args);
+				auto body = car(cdr(args));
+
+				ZASSERT(iscons(bindings))
+				ZASSERT(body!=nil)
+
+				// generate environment with dummy bindings
+				auto dummybindings = nil;
+				auto bindingiter = iter(bindings);
+
+				while (auto binding = bindingiter())
+				{
+					dummybindings = cons(cons(car(binding), nil), dummybindings);
+				}
+
+				dummybindings = ReverseInPlace(dummybindings);
+
+				auto dummyenvironment = extend(env, dummybindings);
+
+				// evaluate bindings in dummy environment, and update dummy environment
+//				auto evalbindings = nil;
+				bindingiter = iter(bindings);
+				auto dummybindingiter = iter(dummybindings);
+
+				while (auto binding = bindingiter())
+				{
+					auto dummybinding = dummybindingiter();
+					cdr(dummybinding) = Eval(car(cdr(binding)), dummyenvironment);
+					//evalbindings = cons(cons(car(binding), Eval(car(cdr(binding)), env)), evalbindings);
+				}
+
+				return Eval(body, dummyenvironment);
+			}
 			else if (zstrequal(symbol(fn), "lambda"))
 			{
 				ZASSERT(ListLength(args)==2)
