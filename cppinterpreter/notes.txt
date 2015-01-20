@@ -19,3 +19,6 @@ letrec
 
 letrec
 1846
+
+cons, car, cdr, list
+1912
