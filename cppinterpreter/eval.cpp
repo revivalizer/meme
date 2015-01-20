@@ -16,6 +16,36 @@ bool IsTrue(atom_t* expr)
 		return true;
 }
 
+atom_t* Unquote(atom_t* expr, environment_t* env)
+{
+	if (iscons(expr))
+	{
+		auto h = car(expr);
+		auto t = cdr(expr);
+
+		if (issymbol(h) && zstrequal(symbol(h), "unquote"))
+		{
+			ZASSERT(!iscons(t) || cdr(t)==nil) // cannot have more than one argument to unquote
+			return Eval(car(t), env);
+		}
+		else
+		{
+			auto result = cons(h, nil);
+
+			auto tailiter = iter(t);
+			
+			while (auto e = tailiter())
+			{
+				result = cons(Unquote(e, env), result);
+			}
+
+			return ReverseInPlace(result);
+		}
+	}
+
+	return expr;
+}
+
 atom_t* Eval(atom_t* expr, environment_t* env)
 {
 	if (isnumber(expr)) 
@@ -127,6 +157,17 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 
 				return Eval(body, extend(env, ReverseInPlace(evalbindings)));
 			}
+			else if (zstrequal(symbol(fn), "quote"))
+			{
+				ZASSERT(cdr(args)==nil)
+				return Unquote(car(args), env);
+			}
+			else if (zstrequal(symbol(fn), "eval"))
+			{
+				ZASSERT(cdr(args)==nil)
+				auto unquotedExpr = Eval(car(args), env);
+				return Eval(unquotedExpr, GetRootEnv(env));
+			}
 			else if (zstrequal(symbol(fn), "lambda"))
 			{
 				ZASSERT(ListLength(args)==2)
@@ -177,7 +218,7 @@ atom_t* Apply(atom_t* fn, atom_t* args)
 			evalbindings = cons(cons(parameter, arg), evalbindings);
 		}
 
-		return Eval(body(fn), extend(environment(fn), ReverseInPlace(evalbindings))); // body is evaluated in the environment where it was defined, exteneded with arguments evaluated in the calling environment
+		return Eval(body(fn), extend(environment(fn), ReverseInPlace(evalbindings))); // body is evaluated in the environment where it was defined, extended with arguments evaluated in the calling environment
 	}
 
 	return nil;
@@ -200,13 +241,15 @@ bool StructuralEquality(atom* expr1, atom* expr2)
 	if (isstring(expr1) && zstrequal(string(expr1), string(expr2)))
 		return true;
 
+	if (issymbol(expr1) && zstrequal(symbol(expr1), symbol(expr2)))
+		return true;
+
 	if (iscons(expr1))
 	{
 		if (!StructuralEquality(car(expr1), car(expr2)))
 			return false;
 
 		return StructuralEquality(cdr(expr1), cdr(expr2));
-
 	}
 
 	return false;

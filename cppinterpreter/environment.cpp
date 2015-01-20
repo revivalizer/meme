@@ -39,3 +39,11 @@ environment_t* CreateGlobalEnvironment()
 
 	return cons(env, nil);
 }
+
+environment_t* GetRootEnv(environment_t* env)
+{
+	if (cdr(env))
+		return cdr(env);
+	else
+		return env;
+}
