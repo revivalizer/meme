@@ -30,8 +30,12 @@ atom_t* lookup(environment_t* env, atom* s)
 environment_t* CreateGlobalEnvironment()
 {
 	atom_t* env = nil;
-	env = cons(cons(new_symbol("-"), new_builtin(BuiltinSub)), env);
-	env = cons(cons(new_symbol("*"), new_builtin(BuiltinMul)), env);
+	env = cons(cons(new_symbol("-"),    new_builtin(BuiltinSub)), env);
+	env = cons(cons(new_symbol("*"),    new_builtin(BuiltinMul)), env);
+	env = cons(cons(new_symbol("cons"), new_builtin(BuiltinCons)), env);
+	env = cons(cons(new_symbol("car"),  new_builtin(BuiltinCar)), env);
+	env = cons(cons(new_symbol("cdr"),  new_builtin(BuiltinCdr)), env);
+	env = cons(cons(new_symbol("list"), new_builtin(BuiltinList)), env);
 
 	return cons(env, nil);
 }

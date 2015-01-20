@@ -185,6 +185,12 @@ atom_t* Apply(atom_t* fn, atom_t* args)
 
 bool StructuralEquality(atom* expr1, atom* expr2)
 {
+	if (expr1==nil && expr2==nil)
+		return true;
+
+	if (expr1==nil || expr2==nil)
+		return false;
+
 	if (type(expr1)!=type(expr2))
 		return false;
 
@@ -193,6 +199,15 @@ bool StructuralEquality(atom* expr1, atom* expr2)
 
 	if (isstring(expr1) && zstrequal(string(expr1), string(expr2)))
 		return true;
+
+	if (iscons(expr1))
+	{
+		if (!StructuralEquality(car(expr1), car(expr2)))
+			return false;
+
+		return StructuralEquality(cdr(expr1), cdr(expr2));
+
+	}
 
 	return false;
 }
