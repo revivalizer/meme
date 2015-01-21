@@ -46,6 +46,8 @@ atom_t* Unquote(atom_t* expr, environment_t* env)
 	return expr;
 }
 
+atom_t* EvalArgList(atom_t* args, environment_t* env);
+
 atom_t* Eval(atom_t* expr, environment_t* env)
 {
 	if (isnumber(expr)) 
@@ -177,24 +179,61 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 
 				return new_lambda(parameters, body, env);
 			}
+			else if (zstrequal(symbol(fn), "macro"))
+			{
+				ZASSERT(ListLength(args)==2)
+
+				auto parameters = car(args);
+				auto body = car(cdr(args));
+
+				return new_macro(parameters, body, env);
+			}
 		}
 
 		// Eval fn
 		fn = Eval(fn, env);
 
-		// Eval args
-		auto argiter = iter(args);
-		auto evalargs = nil;
-
-		while (auto arg = argiter())
+		if (ismacro(fn))
 		{
-			evalargs = cons(Eval(arg, env), evalargs);
-		}
+			ZASSERT(ListLength(args)==ListLength(parameters(fn)))
 
-		return Apply(fn, ReverseInPlace(evalargs));
+			auto unevaluatedBindings = nil;
+			auto parameteriter = iter(parameters(fn));
+			auto argiter = iter(args);
+
+			while (auto parameter = parameteriter())
+			{
+				auto arg = argiter();
+				unevaluatedBindings = cons(cons(parameter, arg), unevaluatedBindings);
+			}
+
+			environment_t* env   = environment(fn); // creating environment
+			environment_t* env_  = env;             // calling environment
+			environment_t* env__ = extend(env, ReverseInPlace(unevaluatedBindings)); // creating environment extended with unevaluated bound arguments
+			return Eval(Eval(body(fn), env__), env_); // body is evaluated in the environment where it was defined, extended with UNEVALUATED arguments, then evaluated in calling environment
+
+		}
+		else
+		{
+			return Apply(fn, EvalArgList(args, env));
+		}
 	}
 
 	return nil;
+}
+
+atom_t* EvalArgList(atom_t* args, environment_t* env)
+{
+	// Eval args
+	auto argiter = iter(args);
+	auto evalargs = nil;
+
+	while (auto arg = argiter())
+	{
+		evalargs = cons(Eval(arg, env), evalargs);
+	}
+
+	return ReverseInPlace(evalargs);
 }
 
 atom_t* Apply(atom_t* fn, atom_t* args)

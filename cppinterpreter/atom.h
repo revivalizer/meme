@@ -90,3 +90,4 @@ ZINLINE bool issymbol (atom* atom) { return isa(atom, ATOM_SYMBOL); }
 ZINLINE bool iscons   (atom* atom) { return isa(atom, ATOM_CONS); }
 ZINLINE bool isbuiltin(atom* atom) { return isa(atom, ATOM_BUILTIN); }
 ZINLINE bool islambda (atom* atom) { return isa(atom, ATOM_LAMBDA); }
+ZINLINE bool ismacro  (atom* atom) { return isa(atom, ATOM_MACRO); }

@@ -1,0 +1,2 @@
+(("(let ((or (macro (a b) '(if ,a 1 (if ,b 1 0))))) (or 1 BOOM))" "1")
+("(let ((and (macro (a b) '(if ,a (if ,b 1 0) 0)))) (and 0 BOOM))" "0" ))
