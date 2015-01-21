@@ -5,16 +5,16 @@ environment_t* extend(environment_t* env, atom_t* bindings)
 	return cons(bindings, env);
 }
 
-atom_t* lookup(environment_t* env, atom* s)
+atom_t*& lookup(environment_t* env, atom* s)
 {
 	// assuming symbol for now
 	auto str = symbol(s);
 
-	auto extensioniter = iter(env);
+	auto frameiter = iter(env);
 
-	while (auto extension = extensioniter())
+	while (auto frame = frameiter())
 	{
-		auto bindingiter = iter(extension);
+		auto bindingiter = iter(frame);
 
 		while (auto binding = bindingiter())
 		{

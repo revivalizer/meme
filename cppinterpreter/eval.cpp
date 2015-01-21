@@ -188,6 +188,13 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 
 				return new_macro(parameters, body, env);
 			}
+			else if (zstrequal(symbol(fn), "set!"))
+			{
+				ZASSERT(ListLength(args)==2)
+				ZASSERT(issymbol(car(args)));
+
+				lookup(car(args), env) = Eval(cdr(args), env);
+			}
 		}
 
 		// Eval fn

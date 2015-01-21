@@ -22,3 +22,9 @@ letrec
 
 cons, car, cdr, list
 1912
+
+quote, unquote, eval
+2004
+
+macro
+2084

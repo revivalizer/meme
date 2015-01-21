@@ -1,0 +1,5 @@
+(("(let ((a 1)) (begin (set! a 2) a))" "2")
+("(let* ((a 5) (dummy (set! a 10))) a)" "10")
+("(begin (define fac (lambda (x) (if x (* x (fac (- x 1))) 1))) (fac 7))" "5040")
+("(begin (define square (lambda (x) (* x x))) (square 4))" "16")
+("(let ((x 4)) (begin (define y 8) (* x y))))" "32"))
