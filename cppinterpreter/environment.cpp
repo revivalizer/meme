@@ -2,7 +2,14 @@
 
 environment_t* extend(environment_t* env, atom_t* bindings)
 {
-	return cons(bindings, env);
+	//return cons(bindings, env);
+	return new environment_t(cons(bindings, env->h), env->global);
+}
+
+void define(environment_t* env, atom_t* symbol)
+{
+	// Adds new nil definition to first frame
+	car(env->h) = cons(cons(symbol, nil), car(env->h));
 }
 
 atom_t*& lookup(environment_t* env, atom* s)
@@ -10,7 +17,7 @@ atom_t*& lookup(environment_t* env, atom* s)
 	// assuming symbol for now
 	auto str = symbol(s);
 
-	auto frameiter = iter(env);
+	auto frameiter = iter(env->h);
 
 	while (auto frame = frameiter())
 	{
@@ -37,13 +44,12 @@ environment_t* CreateGlobalEnvironment()
 	env = cons(cons(new_symbol("cdr"),  new_builtin(BuiltinCdr)), env);
 	env = cons(cons(new_symbol("list"), new_builtin(BuiltinList)), env);
 
-	return cons(env, nil);
+	auto globalEnv = new environment_t(env, nullptr);
+	globalEnv->global = globalEnv;
+	return globalEnv;	
 }
 
-environment_t* GetRootEnv(environment_t* env)
+environment_t* GetGlobalEnv(environment_t* env)
 {
-	if (cdr(env))
-		return cdr(env);
-	else
-		return env;
+	return env->global;
 }

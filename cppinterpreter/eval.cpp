@@ -168,7 +168,7 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 			{
 				ZASSERT(cdr(args)==nil)
 				auto unquotedExpr = Eval(car(args), env);
-				return Eval(unquotedExpr, GetRootEnv(env));
+				return Eval(unquotedExpr, GetGlobalEnv(env));
 			}
 			else if (zstrequal(symbol(fn), "lambda"))
 			{
@@ -193,7 +193,15 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 				ZASSERT(ListLength(args)==2)
 				ZASSERT(issymbol(car(args)));
 
-				lookup(car(args), env) = Eval(cdr(args), env);
+				lookup(env, car(args)) = Eval(cdr(args), env);
+			}
+			else if (zstrequal(symbol(fn), "define"))
+			{
+				ZASSERT(ListLength(args)==2)
+				ZASSERT(issymbol(car(args)));
+
+				define(env, car(args));
+				lookup(env, car(args)) = Eval(cdr(args), env);
 			}
 		}
 

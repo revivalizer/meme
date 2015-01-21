@@ -15,6 +15,8 @@ typedef enum {
 
 typedef atom_t*(*builtin_func)(atom_t *);
 
+struct environment_t;
+
 struct atom {
 	atom_type_t type;
 	union {
@@ -26,7 +28,8 @@ struct atom {
 			atom_t *car, *cdr;
 		};
 		struct { // lambda & macro
-			atom_t *parameters, *body, *env;
+			atom_t *parameters, *body;
+			environment_t* env;
 		};
 		//atom_t *table;
 		struct { // builtin
@@ -64,9 +67,9 @@ ZINLINE atom* cons(atom* car, atom* cdr) { return new_cons(car, cdr); }
 
 ZINLINE atom*& parameters(atom* atom)         { return atom->parameters; }
 ZINLINE atom*& body(atom* atom)               { return atom->body; }
-ZINLINE atom*& environment(atom* atom)        { return atom->env; }
-atom_t *new_lambda(atom_t *parameters, atom_t *body, atom_t *env);
-atom_t *new_macro(atom_t *parameters, atom_t *body, atom_t *env);
+ZINLINE environment_t*& environment(atom* atom)        { return atom->env; }
+atom_t *new_lambda(atom_t *parameters, atom_t *body, environment_t *env);
+atom_t *new_macro(atom_t *parameters, atom_t *body, environment_t *env);
 
 /*#define tag(atom) ((atom)->tag)
 #define rep(atom) ((atom)->rep)
