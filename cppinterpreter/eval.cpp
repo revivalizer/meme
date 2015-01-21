@@ -194,6 +194,7 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 				ZASSERT(issymbol(car(args)));
 
 				lookup(env, car(args)) = Eval(cdr(args), env);
+				return nil;
 			}
 			else if (zstrequal(symbol(fn), "define"))
 			{
@@ -202,6 +203,20 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 
 				define(env, car(args));
 				lookup(env, car(args)) = Eval(cdr(args), env);
+				return nil;
+			}
+			else if (zstrequal(symbol(fn), "begin"))
+			{
+				auto argiter = iter(args);
+
+				auto last = nil;
+
+				while (auto arg = argiter())
+				{
+					last = Eval(arg, env);
+				}
+
+				return last;
 			}
 		}
 
