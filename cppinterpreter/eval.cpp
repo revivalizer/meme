@@ -239,7 +239,7 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 
 			environment_t* env   = environment(fn); // creating environment
 			environment_t* env_  = env;             // calling environment
-			environment_t* env__ = extend(env, ReverseInPlace(unevaluatedBindings)); // creating environment extended with unevaluated bound arguments
+			environment_t* env__ = extend(env, unevaluatedBindings); // creating environment extended with unevaluated bound arguments
 			return Eval(Eval(body(fn), env__), env_); // body is evaluated in the environment where it was defined, extended with UNEVALUATED arguments, then evaluated in calling environment
 
 		}
