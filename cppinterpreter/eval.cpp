@@ -298,7 +298,7 @@ atom_t* EvalArgList(atom_t* args, environment_t* env)
 }
 
 
-bool StructuralEquality(atom* expr1, atom* expr2)
+bool StructuralEquality(atom_t* expr1, atom_t* expr2)
 {
 	if (expr1==nil && expr2==nil)
 		return true;

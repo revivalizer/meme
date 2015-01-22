@@ -39,7 +39,7 @@ atom_t* deserialize(Node** node, ExtendedBinaryExpression* expr)
 			break;
 		case List:
 		{
-			atom* n;
+			atom_t* n;
 			atom_t *cur = nil;
 
 			while ((n = deserialize(node, expr)) != nullptr)

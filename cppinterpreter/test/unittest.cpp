@@ -26,30 +26,30 @@ char* LoadFile(const char* const path)
 	return data;
 }
 
-atom* RunTest(atom* test)
+atom_t* RunTest(atom_t* test)
 {
-	atom* exprStr = car(test);
-	atom* expectedStr = car(cdr(test));
-	atom* expr = Parse(string(exprStr));
-	atom* expected = Parse(string(expectedStr));
+	atom_t* exprStr = car(test);
+	atom_t* expectedStr = car(cdr(test));
+	atom_t* expr = Parse(string(exprStr));
+	atom_t* expected = Parse(string(expectedStr));
 
-	atom* result = Eval(expr, CreateGlobalEnvironment());
+	atom_t* result = Eval(expr, CreateGlobalEnvironment());
 
 	bool success = StructuralEquality(result, expected);
 
 	return cons(new_boolean(success), cons(exprStr, cons(expectedStr, cons(result, nil))));
 }
 
-atom* RunTestsInFile(const char* const path)
+atom_t* RunTestsInFile(const char* const path)
 {
 	char* data = LoadFile(path);
-	atom* tests = Parse(data);
+	atom_t* tests = Parse(data);
 
 	iter testiter(tests);
 
-	atom* result = nil;
+	atom_t* result = nil;
 
-	while (atom* test = testiter())
+	while (atom_t* test = testiter())
 	{
 		result = cons(RunTest(test), result);
 	}
@@ -57,7 +57,7 @@ atom* RunTestsInFile(const char* const path)
 	return ReverseInPlace(result);
 }
 
-atom* RunTestsInDir(const char* const relativePath)
+atom_t* RunTestsInDir(const char* const relativePath)
 {
 	char absolutePath[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH, absolutePath);
@@ -69,7 +69,7 @@ atom* RunTestsInDir(const char* const relativePath)
 	WIN32_FIND_DATA ffd;
 	HANDLE hFind = FindFirstFile(absolutePath, &ffd);
 
-	atom* result = nil;
+	atom_t* result = nil;
 
 	do
 	{
@@ -90,7 +90,7 @@ atom* RunTestsInDir(const char* const relativePath)
 	return ReverseInPlace(result);
 }
 
-void PrintVerboseTestResult(atom* result)
+void PrintVerboseTestResult(atom_t* result)
 {
 	char errorDescBuf[2048];
 

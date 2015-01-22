@@ -1,2 +1,2 @@
 void RunUnitTests();
-atom* RunTest(atom* test);
+atom_t* RunTest(atom_t* test);

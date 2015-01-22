@@ -12,7 +12,7 @@ void define(environment_t* env, atom_t* symbol)
 	car(env->h) = cons(cons(symbol, nil), car(env->h));
 }
 
-atom_t*& lookup(environment_t* env, atom* s)
+atom_t*& lookup(environment_t* env, atom_t* s)
 {
 	// assuming symbol for now
 	auto str = symbol(s);

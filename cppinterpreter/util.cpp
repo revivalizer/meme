@@ -1,6 +1,6 @@
 #include "pch.h"
 
-atom* ReverseInPlace(atom* list)
+atom_t* ReverseInPlace(atom_t* list)
 {
 	// There is a little sublety with how this function works
 	// if you have
@@ -11,8 +11,8 @@ atom* ReverseInPlace(atom* list)
 	// This sideeffect is a little unfortunate
 	iter listiter(list);
 
-	atom* result = nil;
-	atom* cur = list;
+	atom_t* result = nil;
+	atom_t* cur = list;
 
 	while (cur)
 	{
