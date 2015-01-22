@@ -6,6 +6,7 @@ int main(int argc,  char** argv)
 
 #ifndef STANDALONE
 	RunUnitTests();
+	//RunTest(cons(new_string(), new_string()));
 #else
 	auto r = Deserialize(Unpack(nullptr));
 	return int(Eval(r, CreateGlobalEnvironment()));

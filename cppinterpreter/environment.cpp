@@ -44,7 +44,7 @@ environment_t* CreateGlobalEnvironment()
 	env = cons(cons(new_symbol("cdr"),  new_builtin(BuiltinCdr)), env);
 	env = cons(cons(new_symbol("list"), new_builtin(BuiltinList)), env);
 
-	auto globalEnv = new environment_t(env, nullptr);
+	auto globalEnv = new environment_t(cons(env, nil), nullptr);
 	globalEnv->global = globalEnv;
 	return globalEnv;	
 }
