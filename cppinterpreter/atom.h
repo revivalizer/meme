@@ -1,6 +1,6 @@
 #pragma once
 
-typedef struct atom atom_t;
+typedef struct atom_t atom_t;
 
 typedef enum {
 	ATOM_BOOLEAN,
@@ -17,7 +17,7 @@ typedef atom_t*(*builtin_func)(atom_t *);
 
 struct environment_t;
 
-struct atom {
+typedef struct atom_t {
 	atom_type_t type;
 	union {
 		bool boolean;
@@ -36,9 +36,7 @@ struct atom {
 			builtin_func func;
 		};
 	};
-};
-
-typedef struct atom atom_t;
+} atom_t;
 
 extern atom_t *nil;
 ZINLINE bool no(atom_t* atom) { return atom == nil; }

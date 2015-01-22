@@ -4,20 +4,20 @@
 
 struct iter
 {
-	iter(atom* list) { this->cur = list; }
+	iter(atom_t* list) { this->cur = list; }
 
-	atom* cur;
+	atom_t* cur;
 
-	atom* operator() ()
+	atom_t* operator() ()
 	{
 		if (cur==nil) return nil;
 
-		atom* c = cur;
+		atom_t* c = cur;
 		cur = cdr(cur);
 		return car(c);
 	}
 };
 
-atom* ReverseInPlace(atom* list);
+atom_t* ReverseInPlace(atom_t* list);
 
 uint32_t ListLength(atom_t* list);
