@@ -28,3 +28,6 @@ quote, unquote, eval
 
 macro
 2084
+
+set!, define, begin
+2228
