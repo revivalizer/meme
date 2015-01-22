@@ -97,7 +97,7 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 					evalbindings = cons(cons(car(binding), Eval(car(cdr(binding)), env)), evalbindings);
 				}
 
-				return Eval(body, extend(env, ReverseInPlace(evalbindings)));
+				return Eval(body, extend(env, evalbindings));
 			}
 			else if (zstrequal(symbol(fn), "letrec"))
 			{
