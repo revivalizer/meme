@@ -154,10 +154,10 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 				while (auto binding = bindingiter())
 				{
 					evalbindings = cons(cons(car(binding), Eval(car(cdr(binding)), extendedenv)), evalbindings);
-					extendedenv  = extend(env, ReverseInPlace(evalbindings));
+					extendedenv  = extend(env, evalbindings);
 				}
 
-				return Eval(body, extend(env, ReverseInPlace(evalbindings)));
+				return Eval(body, extendedenv);
 			}
 			else if (zstrequal(symbol(fn), "quote"))
 			{
@@ -193,7 +193,7 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 				ZASSERT(ListLength(args)==2)
 				ZASSERT(issymbol(car(args)));
 
-				lookup(env, car(args)) = Eval(cdr(args), env);
+				lookup(env, car(args)) = Eval(car(cdr(args)), env);
 				return nil;
 			}
 			else if (zstrequal(symbol(fn), "define"))
@@ -202,7 +202,7 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 				ZASSERT(issymbol(car(args)));
 
 				define(env, car(args));
-				lookup(env, car(args)) = Eval(cdr(args), env);
+				lookup(env, car(args)) = Eval(car(cdr(args)), env);
 				return nil;
 			}
 			else if (zstrequal(symbol(fn), "begin"))
