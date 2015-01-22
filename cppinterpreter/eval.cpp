@@ -47,6 +47,7 @@ atom_t* Unquote(atom_t* expr, environment_t* env)
 }
 
 atom_t* EvalArgList(atom_t* args, environment_t* env);
+atom_t* Zip(atom_t* list1, atom_t* list2);
 
 atom_t* Eval(atom_t* expr, environment_t* env)
 {
@@ -227,15 +228,7 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 		{
 			ZASSERT(ListLength(args)==ListLength(parameters(fn)))
 
-			auto unevaluatedBindings = nil;
-			auto parameteriter = iter(parameters(fn));
-			auto argiter = iter(args);
-
-			while (auto parameter = parameteriter())
-			{
-				auto arg = argiter();
-				unevaluatedBindings = cons(cons(parameter, arg), unevaluatedBindings);
-			}
+			auto unevaluatedBindings = Zip(parameters(fn), args);
 
 			environment_t* env   = environment(fn); // creating environment
 			environment_t* env_  = env;             // calling environment
@@ -252,6 +245,44 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 	return nil;
 }
 
+atom_t* Apply(atom_t* fn, atom_t* args)
+{
+	ZASSERT(isbuiltin(fn) || islambda(fn));
+	if (isbuiltin(fn))
+	{
+		return (func(fn))(args);
+	}
+	else if (islambda(fn))
+	{
+		ZASSERT(ListLength(args)==ListLength(parameters(fn)))
+
+		auto evalbindings = Zip(parameters(fn), args);
+
+		return Eval(body(fn), extend(environment(fn), ReverseInPlace(evalbindings))); // body is evaluated in the environment where it was defined, extended with arguments evaluated in the calling environment
+	}
+
+	return nil;
+}
+
+atom_t* Zip(atom_t* list1, atom_t* list2)
+{
+	// Turns two lists (a b c) and (1 2 3) into
+	// ((a 1) (b 2) (c 3))
+	auto list = nil;
+
+	auto nextList1 = iter(list1);
+	auto nextList2 = iter(list2);
+
+	atom_t *a, *b;
+
+	while ((a = nextList1(), b = nextList2()) != nil)
+	{
+		list = cons(cons(a, b), list);
+	}
+
+	return ReverseInPlace(list);
+}
+
 atom_t* EvalArgList(atom_t* args, environment_t* env)
 {
 	// Eval args
@@ -266,32 +297,6 @@ atom_t* EvalArgList(atom_t* args, environment_t* env)
 	return ReverseInPlace(evalargs);
 }
 
-atom_t* Apply(atom_t* fn, atom_t* args)
-{
-	ZASSERT(isbuiltin(fn) || islambda(fn));
-	if (isbuiltin(fn))
-	{
-		return (func(fn))(args);
-	}
-	else if (islambda(fn))
-	{
-		ZASSERT(ListLength(args)==ListLength(parameters(fn)))
-
-		auto evalbindings = nil;
-		auto parameteriter = iter(parameters(fn));
-		auto argiter = iter(args);
-
-		while (auto parameter = parameteriter())
-		{
-			auto arg = argiter();
-			evalbindings = cons(cons(parameter, arg), evalbindings);
-		}
-
-		return Eval(body(fn), extend(environment(fn), ReverseInPlace(evalbindings))); // body is evaluated in the environment where it was defined, extended with arguments evaluated in the calling environment
-	}
-
-	return nil;
-}
 
 bool StructuralEquality(atom* expr1, atom* expr2)
 {
