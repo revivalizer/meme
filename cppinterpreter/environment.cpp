@@ -17,13 +17,13 @@ atom_t*& lookup(environment_t* env, atom_t* s)
 	// assuming symbol for now
 	auto str = symbol(s);
 
-	auto frameiter = iter(env->h);
+	auto nextFrame = iter(env->h);
 
-	while (auto frame = frameiter())
+	while (auto frame = nextFrame())
 	{
-		auto bindingiter = iter(frame);
+		auto nextBinding = iter(frame);
 
-		while (auto binding = bindingiter())
+		while (auto binding = nextBinding())
 		{
 			if (zstrequal(str, symbol(car(binding))))
 				return cdr(binding);

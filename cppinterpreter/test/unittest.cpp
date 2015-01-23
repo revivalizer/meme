@@ -45,11 +45,11 @@ atom_t* RunTestsInFile(const char* const path)
 	char* data = LoadFile(path);
 	atom_t* tests = Parse(data);
 
-	iter testiter(tests);
+	iter nextTest(tests);
 
 	atom_t* result = nil;
 
-	while (atom_t* test = testiter())
+	while (atom_t* test = nextTest())
 	{
 		result = cons(RunTest(test), result);
 	}
@@ -97,22 +97,22 @@ void PrintVerboseTestResult(atom_t* result)
 {
 	char errorDescBuf[2048];
 
-	auto fileiter = iter(result);
+	auto nextFile = iter(result);
 
 	bool dirSuccess = true;
 
 	// For all files
-	while (auto file = fileiter())
+	while (auto file = nextFile())
 	{
 		auto filename = string(car(file));
 		auto fileresults = cdr(file);
 
-		auto testiter = iter(fileresults);
+		auto nextTest = iter(fileresults);
 
 		bool fileSuccess = true;
 
 		// For all tests
-		while (auto test = testiter())
+		while (auto test = nextTest())
 		{
 			// Get results
 			bool success = boolean(car(test));

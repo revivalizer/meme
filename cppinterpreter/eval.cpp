@@ -32,9 +32,9 @@ atom_t* Unquote(atom_t* expr, environment_t* env)
 		{
 			auto result = cons(h, nil);
 
-			auto tailiter = iter(t);
+			auto nextElement = iter(t);
 			
-			while (auto e = tailiter())
+			while (auto e = nextElement())
 			{
 				result = cons(Unquote(e, env), result);
 			}
@@ -91,9 +91,9 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 				ZASSERT(body!=nil)
 
 				auto evalbindings = nil;
-				auto bindingiter = iter(bindings);
+				auto nextBinding = iter(bindings);
 
-				while (auto binding = bindingiter())
+				while (auto binding = nextBinding())
 				{
 					evalbindings = cons(cons(car(binding), Eval(car(cdr(binding)), env)), evalbindings);
 				}
@@ -112,9 +112,9 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 
 				// generate environment with dummy bindings
 				auto dummybindings = nil;
-				auto bindingiter = iter(bindings);
+				auto nextBinding = iter(bindings);
 
-				while (auto binding = bindingiter())
+				while (auto binding = nextBinding())
 				{
 					dummybindings = cons(cons(car(binding), nil), dummybindings);
 				}
@@ -124,15 +124,13 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 				auto dummyenvironment = extend(env, dummybindings);
 
 				// evaluate bindings in dummy environment, and update dummy environment
-//				auto evalbindings = nil;
-				bindingiter = iter(bindings);
-				auto dummybindingiter = iter(dummybindings);
+				nextBinding = iter(bindings);
+				auto nextDummyBinding = iter(dummybindings);
 
-				while (auto binding = bindingiter())
+				while (auto binding = nextBinding())
 				{
-					auto dummybinding = dummybindingiter();
+					auto dummybinding = nextDummyBinding();
 					cdr(dummybinding) = Eval(car(cdr(binding)), dummyenvironment);
-					//evalbindings = cons(cons(car(binding), Eval(car(cdr(binding)), env)), evalbindings);
 				}
 
 				return Eval(body, dummyenvironment);
@@ -148,11 +146,11 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 				ZASSERT(body!=nil)
 
 				auto evalbindings = nil;
-				auto bindingiter = iter(bindings);
+				auto nextBinding = iter(bindings);
 
 				auto extendedenv = env;
 
-				while (auto binding = bindingiter())
+				while (auto binding = nextBinding())
 				{
 					evalbindings = cons(cons(car(binding), Eval(car(cdr(binding)), extendedenv)), evalbindings);
 					extendedenv  = extend(env, evalbindings);
@@ -208,11 +206,11 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 			}
 			else if (zstrequal(symbol(fn), "begin"))
 			{
-				auto argiter = iter(args);
+				auto nextArg = iter(args);
 
 				auto last = nil;
 
-				while (auto arg = argiter())
+				while (auto arg = nextArg())
 				{
 					last = Eval(arg, env);
 				}
@@ -286,10 +284,10 @@ atom_t* Zip(atom_t* list1, atom_t* list2)
 atom_t* EvalArgList(atom_t* args, environment_t* env)
 {
 	// Eval args
-	auto argiter = iter(args);
+	auto nextArg = iter(args);
 	auto evalargs = nil;
 
-	while (auto arg = argiter())
+	while (auto arg = nextArg())
 	{
 		evalargs = cons(Eval(arg, env), evalargs);
 	}

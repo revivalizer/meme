@@ -13,25 +13,24 @@ atom_t* BuiltinSub(atom_t* args)
 	}
 
 	double res = number(car(args));
-	auto argiter = iter(cdr(args));
+	auto nextArg = iter(cdr(args));
 
-	while (auto arg = argiter())
+	while (auto arg = nextArg())
 	{
 		ZASSERT(isnumber(arg))
 		res -= number(arg);
 	}
 
 	return new_number(res);
-
 }
 
 atom_t* BuiltinMul(atom_t* args)
 {
 	double res = 1.0;
 
-	auto argiter = iter(args);
+	auto nextArg = iter(args);
 
-	while (auto arg = argiter())
+	while (auto arg = nextArg())
 	{
 		ZASSERT(isnumber(arg))
 		res *= number(arg);

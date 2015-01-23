@@ -1,6 +1,9 @@
 #pragma once
 
 typedef struct atom_t atom_t;
+struct environment_t;
+
+typedef atom_t*(*builtin_func)(atom_t *);
 
 typedef enum {
 	ATOM_BOOLEAN,
@@ -12,10 +15,6 @@ typedef enum {
 	ATOM_MACRO,
 	ATOM_BUILTIN,
 } atom_type_t;
-
-typedef atom_t*(*builtin_func)(atom_t *);
-
-struct environment_t;
 
 typedef struct atom_t {
 	atom_type_t type;
@@ -51,33 +50,19 @@ atom_t *new_number(const double value);
 ZINLINE char*& string(atom_t* atom) { return atom->string; }
 atom_t *new_string(const char *value);
 
-//extern atom_t *symbol_table;
-
 ZINLINE char*& symbol(atom_t* atom) { return atom->symbol; }
 atom_t *new_symbol(const char *value);
-atom_t *coerce_symbol(atom_t *value);
-atom_t *intern(const char *symbol);
 
 ZINLINE atom_t*& car(atom_t* atom) { return atom->car; }
 ZINLINE atom_t*& cdr(atom_t* atom) { return atom->cdr; }
 atom_t *new_cons(atom_t *car, atom_t *cdr);
-atom_t *coerce_cons(atom_t *value);
 ZINLINE atom_t* cons(atom_t* car, atom_t* cdr) { return new_cons(car, cdr); }
 
-ZINLINE atom_t*& parameters(atom_t* atom)         { return atom->parameters; }
-ZINLINE atom_t*& body(atom_t* atom)               { return atom->body; }
+ZINLINE atom_t*&        parameters(atom_t* atom)         { return atom->parameters; }
+ZINLINE atom_t*&        body(atom_t* atom)               { return atom->body; }
 ZINLINE environment_t*& environment(atom_t* atom)        { return atom->env; }
 atom_t *new_lambda(atom_t *parameters, atom_t *body, environment_t *env);
 atom_t *new_macro(atom_t *parameters, atom_t *body, environment_t *env);
-
-/*#define tag(atom) ((atom)->tag)
-#define rep(atom) ((atom)->rep)
-atom_t *new_tagged(atom_t *tag, atom_t *rep);
-
-#define table(atom) ((atom)->table)
-atom_t *new_table(atom_t *entries);
-atom_t *coerce_table(atom_t *value);
-*/
 
 ZINLINE builtin_func& func(atom_t* atom) { return atom->func; }
 atom_t *new_builtin(atom_t *(*func)(atom_t *));

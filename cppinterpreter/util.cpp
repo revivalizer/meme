@@ -9,7 +9,6 @@ atom_t* ReverseInPlace(atom_t* list)
 	// a will no longer refer to the head of the list, but to the cons element where a is defined,
 	// which is now the end of the list!
 	// This sideeffect is a little unfortunate
-	iter listiter(list);
 
 	atom_t* result = nil;
 	atom_t* cur = list;
@@ -29,14 +28,11 @@ uint32_t ListLength(atom_t* list)
 {
 	if (iscons(list))
 	{
-		if (car(list)==nil)
-			return 0;
-
 		uint32_t length = 0;
 
-		auto listiter = iter(list);
+		auto nextElement = iter(list);
 
-		while (listiter())
+		while (nextElement())
 			length++;
 
 		return length;

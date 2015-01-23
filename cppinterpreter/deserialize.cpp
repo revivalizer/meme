@@ -40,14 +40,14 @@ atom_t* deserialize(Node** node, ExtendedBinaryExpression* expr)
 		case List:
 		{
 			atom_t* n;
-			atom_t *cur = nil;
+			atom_t *list = nil;
 
 			while ((n = deserialize(node, expr)) != nullptr)
 			{
-				cur = cons(n, cur);
+				list = cons(n, list);
 			}
 
-			return ReverseInPlace(cur);
+			return ReverseInPlace(list);
 			break;
 		}
 		case String:

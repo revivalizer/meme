@@ -11,7 +11,7 @@ struct BinaryExpression
 	char*     strings;
 	char*     symbols;
 	double*   numbers;
-	uint32_t  dummy; // for alignment
+	uint32_t  dummy; // for 32 byte alignment
 };
 
 typedef uint16_t Node;
@@ -23,7 +23,6 @@ struct ExtendedBinaryExpression
 	char**    symbols;
 	double*   numbers;
 };
-
 
 ExtendedBinaryExpression* Unpack(BinaryExpression* blob);
 atom_t* Deserialize(ExtendedBinaryExpression* expr);
