@@ -12,7 +12,7 @@ status
 - [x] F# export of binary representation of parsed S-expression
 - [x] Interop between C++ and F# parser/exporter
 - [x] Basic C++ interpreter 
-  - [ ] Garbage collector
+  - [x] Garbage collector
   - [ ] Size optimization
   - [ ] Continuation passing style?
 - [ ] Scheme to x86 compiler in Scheme
