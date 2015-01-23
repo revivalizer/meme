@@ -3,9 +3,13 @@
 atom_t *nil = nullptr;
 
 atom_t *new_atom(const atom_type_t type) {
-	atom_t *result = new atom_t;
-	result->type = type;
-	return result;
+	atom_t *atom = new atom_t;
+	atom->type = type;
+	atom->markId = 0;
+
+	gc_track(atom);
+
+	return atom;
 }
 
 atom_t *new_boolean(const bool value) {

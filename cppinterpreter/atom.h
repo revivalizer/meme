@@ -36,6 +36,7 @@ typedef struct atom_t {
 			builtin_func func;
 		};
 	};
+	uint32_t markId;
 } atom_t;
 
 extern atom_t *nil;

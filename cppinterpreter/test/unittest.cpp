@@ -84,6 +84,9 @@ atom_t* RunTestsInDir(const char* const relativePath)
 		}
 	}
 	while (FindNextFile(hFind, &ffd) != 0);
+
+	gc_mark(result);
+	gc_sweep();
 	
 	FindClose(hFind);
 

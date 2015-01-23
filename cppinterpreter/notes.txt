@@ -17,7 +17,7 @@ Lambda
 letrec
 1800
 
-letrec
+let*
 1846
 
 cons, car, cdr, list
@@ -31,3 +31,9 @@ macro
 
 set!, define, begin
 2228
+
+extract list zip, use in lambda and macro
+2195
+
+garbage collection
+2349
