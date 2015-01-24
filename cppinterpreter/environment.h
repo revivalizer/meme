@@ -7,7 +7,7 @@ struct environment_t
 };
 
 environment_t* extend(environment_t* env, atom_t* bindings);
-void           define(environment_t* env, atom_t* symbol);
+void           define(environment_t* env, atom_t* symbol, atom_t* expr);
 atom_t*&       lookup(environment_t* env, atom_t* symbol);
 environment_t* GetGlobalEnv(environment_t* env);
 

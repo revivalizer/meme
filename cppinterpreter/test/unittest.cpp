@@ -149,5 +149,5 @@ void PrintVerboseTestResult(atom_t* result)
 
 void RunUnitTests()
 {
-	PrintVerboseTestResult(RunTestsInDir("..\\test\\unittests\\"));
+	PrintVerboseTestResult(RunTestsInDir("..\\unittests\\"));
 }

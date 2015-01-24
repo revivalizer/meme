@@ -200,7 +200,7 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 				ZASSERT(ListLength(args)==2)
 				ZASSERT(issymbol(car(args)));
 
-				define(env, car(args));
+				define(env, car(args), nil);
 				lookup(env, car(args)) = Eval(car(cdr(args)), env);
 				return nil;
 			}

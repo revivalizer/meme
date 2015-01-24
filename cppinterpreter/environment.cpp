@@ -6,10 +6,10 @@ environment_t* extend(environment_t* env, atom_t* bindings)
 	return new environment_t(cons(bindings, env->h), env->global);
 }
 
-void define(environment_t* env, atom_t* symbol)
+void define(environment_t* env, atom_t* symbol, atom_t* expr)
 {
 	// Adds new nil definition to first frame
-	car(env->h) = cons(cons(symbol, nil), car(env->h));
+	car(env->h) = cons(cons(symbol, expr), car(env->h));
 }
 
 atom_t*& lookup(environment_t* env, atom_t* s)
@@ -36,18 +36,18 @@ atom_t*& lookup(environment_t* env, atom_t* s)
 
 environment_t* CreateGlobalEnvironment()
 {
-	atom_t* env = nil;
-	env = cons(cons(new_symbol("-"),    new_builtin(BuiltinSub)), env);
-	env = cons(cons(new_symbol("*"),    new_builtin(BuiltinMul)), env);
-	env = cons(cons(new_symbol("cons"), new_builtin(BuiltinCons)), env);
-	env = cons(cons(new_symbol("car"),  new_builtin(BuiltinCar)), env);
-	env = cons(cons(new_symbol("cdr"),  new_builtin(BuiltinCdr)), env);
-	env = cons(cons(new_symbol("list"), new_builtin(BuiltinList)), env);
-	env = cons(cons(new_symbol("emit"), new_builtin(BuiltinEmit)), env);
-	env = cons(cons(new_symbol("run"),  new_builtin(BuiltinRun)), env);
-
-	auto globalEnv = new environment_t(cons(env, nil), nullptr);
+	auto globalEnv = new environment_t(cons(nil, nil), nullptr);
 	globalEnv->global = globalEnv;
+
+	define(globalEnv, new_symbol("-"),    new_builtin(BuiltinSub));
+	define(globalEnv, new_symbol("*"),    new_builtin(BuiltinMul));
+	define(globalEnv, new_symbol("cons"), new_builtin(BuiltinCons));
+	define(globalEnv, new_symbol("car"),  new_builtin(BuiltinCar));
+	define(globalEnv, new_symbol("cdr"),  new_builtin(BuiltinCdr));
+	define(globalEnv, new_symbol("list"), new_builtin(BuiltinList));
+	define(globalEnv, new_symbol("emit"), new_builtin(BuiltinEmit));
+	define(globalEnv, new_symbol("run"),  new_builtin(BuiltinRun));
+
 	return globalEnv;	
 }
 
