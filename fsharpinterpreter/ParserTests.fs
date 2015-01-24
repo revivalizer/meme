@@ -16,6 +16,7 @@ let AssertParseFailure p str =
 [<Fact>]
 let ``Simple expression parser`` () =
     AssertParseSuccess numberLiteral "1"
+    AssertParseSuccess numberLiteral "0x21"
     AssertParseSuccess numberLiteral "1 "
     AssertParseSuccess stringLiteral "\"1\" "
     AssertParseSuccess expr "(* 5 9)"

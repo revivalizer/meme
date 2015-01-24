@@ -8,7 +8,10 @@ open ParserTypes;
 let ws = spaces
 let str_ws s = pstring s .>> ws
 
-let numberLiteral = getPosition .>>. pfloat .>> ws |>> Number
+let floatLiteral = getPosition .>>. pfloat .>> ws |>> Number
+let intLiteral = getPosition .>>. pint32 .>> ws |>> (fun (p, f) -> Number(p, float(f)))
+
+let numberLiteral = floatLiteral <|> intLiteral
 
 let isSymbolChar = isAnyOf "!$%&*+-./:<=>?@^_~"
 

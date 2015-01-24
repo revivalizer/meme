@@ -38,6 +38,7 @@ let MakeNumList nums =
 [<Fact>]
 let ``Simple expression eval`` () =
     AssertEqualNum "1" 1.0
+    AssertEqualNum "0x33" 51.0
     AssertEqualNum "(* 4 7)" 28.0
     AssertEqualNum "(  * 4 7)" 28.0
     AssertEqualNum "(  *   4     7    )" 28.0
