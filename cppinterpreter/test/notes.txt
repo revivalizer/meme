@@ -37,3 +37,6 @@ extract list zip, use in lambda and macro
 
 garbage collection
 2349
+
+split into lib ?
+2429

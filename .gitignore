@@ -2,5 +2,6 @@ bin
 *.suo
 obj
 cppinterpreter/build
+cppinterpreter/test/build
 */ipch/
 *.sdf
