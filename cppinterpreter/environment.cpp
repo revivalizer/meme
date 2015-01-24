@@ -43,6 +43,8 @@ environment_t* CreateGlobalEnvironment()
 	env = cons(cons(new_symbol("car"),  new_builtin(BuiltinCar)), env);
 	env = cons(cons(new_symbol("cdr"),  new_builtin(BuiltinCdr)), env);
 	env = cons(cons(new_symbol("list"), new_builtin(BuiltinList)), env);
+	env = cons(cons(new_symbol("emit"), new_builtin(BuiltinEmit)), env);
+	env = cons(cons(new_symbol("run"),  new_builtin(BuiltinRun)), env);
 
 	auto globalEnv = new environment_t(cons(env, nil), nullptr);
 	globalEnv->global = globalEnv;

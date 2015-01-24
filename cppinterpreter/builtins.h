@@ -4,3 +4,6 @@ atom_t* BuiltinCons(atom_t* args);
 atom_t* BuiltinCar(atom_t* args);
 atom_t* BuiltinCdr(atom_t* args);
 atom_t* BuiltinList(atom_t* args);
+atom_t* BuiltinList(atom_t* args);
+atom_t* BuiltinEmit(atom_t* args);
+atom_t* BuiltinRun(atom_t* args);
