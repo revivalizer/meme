@@ -45,8 +45,6 @@ environment_t* CreateGlobalEnvironment()
 	define(globalEnv, new_symbol("car"),  new_builtin(BuiltinCar));
 	define(globalEnv, new_symbol("cdr"),  new_builtin(BuiltinCdr));
 	define(globalEnv, new_symbol("list"), new_builtin(BuiltinList));
-	define(globalEnv, new_symbol("emit"), new_builtin(BuiltinEmit));
-	define(globalEnv, new_symbol("run"),  new_builtin(BuiltinRun));
 
 	return globalEnv;	
 }

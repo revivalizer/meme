@@ -71,33 +71,3 @@ atom_t* BuiltinList(atom_t* args)
 	ZASSERT(iscons(args));
 	return args;
 }
-
-atom_t* BuiltinEmit(atom_t* args)
-{
-	if (isnumber(args))
-	{
-		ZASSERT(number(args) < 256)
-		exec_emit(uint8_t(number(args)));
-	}
-	else if (iscons(args))
-	{
-		auto nextArg = iter(args);
-
-		while (auto arg = nextArg())
-		{
-			ZASSERT(isnumber(arg))
-			ZASSERT(number(arg) < 256)
-			exec_emit(uint8_t(number(arg)));
-		}
-	}
-
-	return nil;
-}
-
-atom_t* BuiltinRun(atom_t* args)
-{
-	args;
-	exec_run();	
-
-	return nil;
-}

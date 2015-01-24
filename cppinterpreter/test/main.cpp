@@ -6,9 +6,6 @@ int main(int argc,  char** argv)
 
 #ifndef STANDALONE
 	RunUnitTests();
-	exec_alloc();
-	exec_emit(0xC3);
-	exec_run();
 #else
 	auto r = Deserialize(Unpack(nullptr));
 	auto env = CreateGlobalEnvironment();

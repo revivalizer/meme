@@ -1,6 +1,5 @@
 #include "atom.h"
 #include "util.h"
-#include "exec.h"
 #include "builtins.h"
 #include "environment.h"
 #include "eval.h"

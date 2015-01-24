@@ -38,5 +38,13 @@ extract list zip, use in lambda and macro
 garbage collection
 2349
 
+.. adding emitting here
+
 split into lib ?
 2429
+
+use define when creating global env
+2397
+
+move emitting to lift
+2339
