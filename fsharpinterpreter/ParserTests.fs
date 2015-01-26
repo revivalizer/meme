@@ -19,4 +19,7 @@ let ``Simple expression parser`` () =
     AssertParseSuccess numberLiteral "0x21"
     AssertParseSuccess numberLiteral "1 "
     AssertParseSuccess stringLiteral "\"1\" "
+    AssertParseSuccess stringLiteral "\"1\";comment"
+    AssertParseSuccess stringLiteral "\"1\"  ;comment"
+    AssertParseSuccess expr "(* 5 9) ;comment"
     AssertParseSuccess expr "(* 5 9)"

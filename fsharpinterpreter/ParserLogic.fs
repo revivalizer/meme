@@ -5,7 +5,9 @@ open ErrorHandling;
 open ErrorHandlingExtensions;
 open ParserTypes;
 
-let ws = spaces
+let lineComment = skipChar ';' >>. skipRestOfLine true 
+
+let ws = many (lineComment <|> spaces1)
 let str_ws s = pstring s .>> ws
 
 let floatLiteral = getPosition .>>. pfloat .>> ws |>> Number
