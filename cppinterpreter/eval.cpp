@@ -57,8 +57,8 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 		return expr;
 	else if (issymbol(expr))
 		return lookup(env, expr);
-	else if (iscons(expr) && car(expr)==nil)
-		return expr; // empty list evaluates to itself
+	//else if (iscons(expr) && car(expr)==nil)
+	//	return expr; // empty list evaluates to itself
 	else if (iscons(expr))
 	{
 		atom_t* fn = car(expr);
@@ -160,12 +160,12 @@ atom_t* Eval(atom_t* expr, environment_t* env)
 			}
 			else if (zstrequal(symbol(fn), "quote"))
 			{
-				ZASSERT(cdr(args)==nil)
+				ZASSERT(no(cdr(args)))
 				return Unquote(car(args), env);
 			}
 			else if (zstrequal(symbol(fn), "eval"))
 			{
-				ZASSERT(cdr(args)==nil)
+				ZASSERT(no(cdr(args)))
 				auto unquotedExpr = Eval(car(args), env);
 				return Eval(unquotedExpr, GetGlobalEnv(env));
 			}
@@ -273,7 +273,7 @@ atom_t* Zip(atom_t* list1, atom_t* list2)
 
 	atom_t *a, *b;
 
-	while ((a = nextList1(), b = nextList2()) != nil)
+	while ((a = nextList1(), b = nextList2()) != nullptr)
 	{
 		list = cons(cons(a, b), list);
 	}
@@ -298,10 +298,10 @@ atom_t* EvalArgList(atom_t* args, environment_t* env)
 
 bool StructuralEquality(atom_t* expr1, atom_t* expr2)
 {
-	if (expr1==nil && expr2==nil)
+	if (no(expr1) && no(expr2))
 		return true;
 
-	if (expr1==nil || expr2==nil)
+	if (no(expr1) || no(expr2))
 		return false;
 
 	if (type(expr1)!=type(expr2))

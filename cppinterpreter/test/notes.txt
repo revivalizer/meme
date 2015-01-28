@@ -48,3 +48,6 @@ use define when creating global env
 
 move emitting to lift
 2339
+
+switch to special nil symbol
+2357

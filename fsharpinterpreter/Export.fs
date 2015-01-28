@@ -1,5 +1,6 @@
 ﻿module Export
 
+open FParsec
 open ParserTypes
 open ParserLogic
 open ErrorHandling;
@@ -133,4 +134,4 @@ let generateBinaryData (res : BinaryExpr) =
     Success (stream.GetBuffer())
 
 let strToBinaryRep str =
-    str |> parse expr |> bind analyzeUniques |> bind generateBinaryRepresentation |> bind generateBinaryData |> extractOrFail
+    str |> parse (expr .>> eof) |> bind analyzeUniques |> bind generateBinaryRepresentation |> bind generateBinaryData |> extractOrFail

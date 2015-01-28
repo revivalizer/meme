@@ -10,7 +10,7 @@ struct iter
 
 	atom_t* operator() ()
 	{
-		if (cur==nil) return nil;
+		if (no(cur)) return nullptr;
 
 		atom_t* c = cur;
 		cur = cdr(cur);

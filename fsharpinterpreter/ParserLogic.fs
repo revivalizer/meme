@@ -47,7 +47,7 @@ let list = getPosition .>> str_ws "(" .>>. (many expr) .>> str_ws ")" |>> List
 let expr' = atom <|> list
 let quoted_expr = getPosition .>> skipChar '\'' .>>. expr' |>> (fun (p, e) -> List(p, [Symbol(p, "quote"); e]))
 let unquoted_expr = getPosition .>> skipChar ',' .>>. expr' |>> (fun (p, e) -> List(p, [Symbol(p, "unquote"); e]))
-do exprImpl := quoted_expr <|> unquoted_expr <|> expr'
+do exprImpl := ws >>. (quoted_expr <|> unquoted_expr <|> expr')
 
 let parse p str =
     match run p str with

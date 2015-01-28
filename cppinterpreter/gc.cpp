@@ -17,7 +17,7 @@ void gc_mark(environment_t* env)
 
 void gc_mark(atom_t* atom)
 {
-	if (atom==nil)
+	if (no(atom))
 		return;
 
 	if (atom->markId==markId)

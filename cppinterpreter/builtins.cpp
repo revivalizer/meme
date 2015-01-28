@@ -2,12 +2,12 @@
 
 atom_t* BuiltinSub(atom_t* args)
 {
-	if (args==nil)
+	if (no(args))
 		return new_number(0.0);
 
 	ZASSERT(isnumber(car(args)));
 
-	if (cdr(args)==nil)
+	if (no(cdr(args)))
 	{
 		return new_number(-number(car(args)));
 	}
@@ -56,12 +56,18 @@ atom_t* BuiltinCons(atom_t* args)
 
 atom_t* BuiltinCar(atom_t* args)
 {
+	if (no(args))
+		return nil;
+
 	ZASSERT(iscons(args));
 	return car(car(args));
 }
 
 atom_t* BuiltinCdr(atom_t* args)
 {
+	if (no(args))
+		return nil;
+
 	ZASSERT(iscons(args));
 	return cdr(car(args));
 }

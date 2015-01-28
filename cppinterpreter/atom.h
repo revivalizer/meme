@@ -14,6 +14,7 @@ typedef enum {
 	ATOM_LAMBDA,
 	ATOM_MACRO,
 	ATOM_BUILTIN,
+	ATOM_NIL,
 } atom_type_t;
 
 typedef struct atom_t {
@@ -39,7 +40,8 @@ typedef struct atom_t {
 } atom_t;
 
 extern atom_t *nil;
-ZINLINE bool no(atom_t* atom) { return atom == nil; }
+ZINLINE bool no(atom_t* atom) { return atom == nullptr || atom == nil; }
+atom_t* get_nil();
 
 ZINLINE bool& boolean(atom_t* atom) { return atom->boolean; }
 atom_t* new_boolean(const bool boolean);

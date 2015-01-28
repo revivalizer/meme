@@ -13,7 +13,7 @@ atom_t* ReverseInPlace(atom_t* list)
 	atom_t* result = nil;
 	atom_t* cur = list;
 
-	while (cur)
+	while (!no(cur))
 	{
 		auto next = cdr(cur);
 		cdr(cur) = result;
@@ -26,7 +26,7 @@ atom_t* ReverseInPlace(atom_t* list)
 
 uint32_t ListLength(atom_t* list)
 {
-	ZASSERT(list!=nil && list!=nullptr)
+	ZASSERT(!no(list))
 
 	if (iscons(list))
 	{
