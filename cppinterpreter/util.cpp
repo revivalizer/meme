@@ -26,8 +26,7 @@ atom_t* ReverseInPlace(atom_t* list)
 
 uint32_t ListLength(atom_t* list)
 {
-	ZASSERT(!no(list))
-
+	//ZASSERT(!no(list)) 
 	if (iscons(list))
 	{
 		uint32_t length = 0;

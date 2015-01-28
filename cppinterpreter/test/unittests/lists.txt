@@ -5,4 +5,5 @@
 ("(cons 1 (cons 2 (cons 3 ())))" "(1 2 3)")
 ("(let ((a 1) (b 2) (c 3)) (list a b c))" "(1 2 3)")
 ("(let ((a (list 1 2 3))) (car a))" "1")
-("(let ((a (list 1 2 3))) (cdr a))" "(2 3)"))
+("(let ((a (list 1 2 3))) (cdr a))" "(2 3)")
+("(cons 1 nil)" "(1)"))

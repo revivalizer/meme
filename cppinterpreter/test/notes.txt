@@ -51,3 +51,6 @@ move emitting to lift
 
 switch to special nil symbol
 2357
+
+expose nil as symbol
+2359
