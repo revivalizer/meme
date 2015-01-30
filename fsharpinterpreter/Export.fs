@@ -65,6 +65,7 @@ let generateBinaryRepresentation (res : AnalyzedExpr) =
         | Symbol(_, s)   -> [uint16(NodeType.Symbol); res.uniqueSymbols.[s]]
         | Number(_, n)   -> [uint16(NodeType.Number); res.uniqueNumbers.[n]]
         | List(_, l)     -> [uint16(NodeType.List)] @ (l |> List.map generate |> List.concat) @ [uint16(NodeType.EOC)]
+        | InfixList(_)   -> failwith "Unexpected infix list, forgot expansion?"
     Success {
         binaryExpr = (generate res.expr)
         expr = res.expr
@@ -134,4 +135,4 @@ let generateBinaryData (res : BinaryExpr) =
     Success (stream.GetBuffer())
 
 let strToBinaryRep str =
-    str |> parse (expr .>> eof) |> bind analyzeUniques |> bind generateBinaryRepresentation |> bind generateBinaryData |> extractOrFail
+    str |> parse (expr .>> eof) |> bind infixExpandWalk |> bind analyzeUniques |> bind generateBinaryRepresentation |> bind generateBinaryData |> extractOrFail

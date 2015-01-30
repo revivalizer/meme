@@ -29,6 +29,7 @@ let eval expr =
             | Expr.String(pos, v)  -> AddToPosMap (EvalExpr.String(v)) pos
             | Expr.Symbol(pos, v)  -> AddToPosMap (EvalExpr.Symbol(v)) pos
             | Expr.List(pos, v)    -> AddToPosMap (EvalExpr.List(v |> List.map convert)) pos
+            | e -> failwith (sprintf "Malformed parse tree. This is probably due to unexpanded infix list.")
         convert parseexpr
     
     let NumericBinaryOp f args =

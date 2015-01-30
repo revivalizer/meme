@@ -23,3 +23,4 @@ let ``Simple expression parser`` () =
     AssertParseSuccess stringLiteral "\"1\"  ;comment"
     AssertParseSuccess expr "(* 5 9) ;comment"
     AssertParseSuccess expr "(* 5 9)"
+    AssertParseSuccess expr "(* {2 * 3} 9)"
