@@ -55,22 +55,40 @@ let parse p str =
     | ParserResult.Success(result, _, _)   -> Success(result)
     | ParserResult.Failure(errorMsg, _, _) -> Failure(errorMsg)
 
-let rec infixExpand list =
+let rec stringify expr =
+    match expr with
+    //| List(p, l) -> "(" + (List.fold s l "") + ")"
+    | List(p, l) -> "(" + (String.concat " " (Seq.ofList (l |> List.map stringify))) + ")"
+    | InfixList(p, l) -> "{" + (String.concat " " (Seq.ofList (l |> List.map stringify))) + "}"
+    | Number(_, n) -> sprintf "%A" n
+    | String(_, s) -> sprintf "%A" s
+    | Symbol(_, s) -> sprintf "%A" s
+
+let rec infixExpand (list : Expr list) =
+    printf "expand %A\n" (stringify (MakeList list))
     match list with
     | [e1; s; e2] -> infixRearrange e1 s e2
     | e1 :: s :: e2 :: rest -> infixExpand ((infixRearrange e1 s e2) :: rest)
     | o -> failwith (sprintf "Malformed infix at %A." (pos (List.head o)))
 and infixRearrange e1 s e2 =
+    printf "rearrange %A %A %A\n" (stringify e1) (stringify s) (stringify e2)
     match e1 with
         | List(p, h :: t) ->
-            if s=h then
+            printf "test %A %A\n" (stringify s) (stringify h)
+            match s,h with
+            | Symbol(_, s1), Symbol(_, s2) when s1=s2 -> 
+                printf "append\n"
+                printf "1 %A\n" (stringify h)
+                printf "2 %A\n" (List.map stringify t |> List.fold (+) "")
+                printf "3 %A\n" (stringify e2)
                 List(p, [h] @ t @ [e2]) 
-            else
+            | _ ->
                 List(pos e1, [s; e1; e2]) 
         | e -> List(pos e1, [s; e1; e2]) 
 
 let infixExpandWalk expr = 
     let rec walk expr =
+        printf "walk %A\n" (stringify expr)
         match expr with
         | List(p, l) -> List(p, l |> List.map walk)
         | InfixList(p, l) -> infixExpand l |> walk
