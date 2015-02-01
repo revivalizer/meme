@@ -63,25 +63,23 @@ let rec stringify expr =
     | String(_, s)    -> sprintf "%s" s
     | Symbol(_, s)    -> sprintf "%s" s
 
-let rec infixExpand (list : Expr list) =
+let rec infixExpand (list : Expr list) = // recurse over list
     match list with
-    | [e1; s; e2] -> infixRearrange e1 s e2
-    | e1 :: s :: e2 :: rest -> infixExpand ((infixRearrange e1 s e2) :: rest)
+    | [e1; s; e2]           ->  infixRearrange e1 s e2
+    | e1 :: s :: e2 :: rest -> (infixRearrange e1 s e2) :: rest |> infixExpand
     | o -> failwith (sprintf "Malformed infix at %A." (pos (List.head o)))
-and infixRearrange e1 s e2 =
+and infixRearrange e1 s e2 = // convert infix to prefix
     match e1 with
         | List(p, h :: t) ->
             match s,h with
-            | Symbol(_, s1), Symbol(_, s2) when s1=s2 -> 
-                List(p, [h] @ t @ [e2]) 
-            | _ ->
-                List(pos e1, [s; e1; e2]) 
+            | Symbol(_, s1), Symbol(_, s2) when s1=s2 -> List(p, [h] @ t @ [e2])    // symbols match, concat e2 into e1 list
+            | _                                       -> List(pos e1, [s; e1; e2])  // symbols don't match, make new list
         | e -> List(pos e1, [s; e1; e2]) 
 
 let infixExpandWalk expr = 
     let rec walk expr =
         match expr with
-        | List(p, l) -> List(p, l |> List.map walk)
+        | List(p, l)      -> List(p, l |> List.map walk)
         | InfixList(p, l) -> infixExpand l |> walk
         | e -> e
     Success (walk expr)
