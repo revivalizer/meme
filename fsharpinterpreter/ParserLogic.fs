@@ -57,12 +57,11 @@ let parse p str =
 
 let rec stringify expr =
     match expr with
-    //| List(p, l) -> "(" + (List.fold s l "") + ")"
-    | List(p, l) -> "(" + (String.concat " " (Seq.ofList (l |> List.map stringify))) + ")"
+    | List(p, l) -> "(" + (l |> List.map stringify |> Seq.ofList |> String.concat " ") + ")"
     | InfixList(p, l) -> "{" + (String.concat " " (Seq.ofList (l |> List.map stringify))) + "}"
     | Number(_, n) -> sprintf "%A" n
-    | String(_, s) -> sprintf "%A" s
-    | Symbol(_, s) -> sprintf "%A" s
+    | String(_, s) -> sprintf "%s" s
+    | Symbol(_, s) -> sprintf "%s" s
 
 let rec infixExpand (list : Expr list) =
     printf "expand %A\n" (stringify (MakeList list))
@@ -79,7 +78,7 @@ and infixRearrange e1 s e2 =
             | Symbol(_, s1), Symbol(_, s2) when s1=s2 -> 
                 printf "append\n"
                 printf "1 %A\n" (stringify h)
-                printf "2 %A\n" (List.map stringify t |> List.fold (+) "")
+                printf "2 %A\n" (stringify (MakeList t))
                 printf "3 %A\n" (stringify e2)
                 List(p, [h] @ t @ [e2]) 
             | _ ->
