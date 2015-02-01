@@ -41,7 +41,6 @@ typedef struct atom_t {
 
 extern atom_t *nil;
 ZINLINE bool no(atom_t* atom) { return atom == nullptr || atom == nil; }
-atom_t* get_nil();
 
 ZINLINE bool& boolean(atom_t* atom) { return atom->boolean; }
 atom_t* new_boolean(const bool boolean);

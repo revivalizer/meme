@@ -1,14 +1,6 @@
 #include "pch.h"
 
-atom_t* get_nil()
-{
-	static atom_t* nil = new atom_t;
-	type(nil) = ATOM_NIL;
-
-	return nil;
-}
-
-atom_t *nil = get_nil();
+atom_t *nil;
 
 atom_t *new_atom(const atom_type_t type) {
 	atom_t *atom = new atom_t;
