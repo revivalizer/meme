@@ -1,0 +1,4 @@
+(
+("(if (is (type 1) 'number) 1 0)" "1")
+("(if (is (type 1) 'numbe) 1 0)" "0")
+)

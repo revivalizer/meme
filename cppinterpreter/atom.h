@@ -39,8 +39,17 @@ typedef struct atom_t {
 	uint32_t markId;
 } atom_t;
 
-extern atom_t *nil;
-ZINLINE bool no(atom_t* atom) { return atom == nullptr || atom == nil; }
+extern atom_t* sym_boolean;
+extern atom_t* sym_number;
+extern atom_t* sym_string;
+extern atom_t* sym_symbol;
+extern atom_t* sym_cons;
+extern atom_t* sym_lambda;
+extern atom_t* sym_macro;
+extern atom_t* sym_builtin;
+
+extern atom_t *nil, *t;
+ZINLINE bool no(atom_t* atom) { return atom == nullptr || atom == nil; } // this seems probablematic. what about the nil symbol defined in scheme code? would need str comparison.
 
 ZINLINE bool& boolean(atom_t* atom) { return atom->boolean; }
 atom_t* new_boolean(const bool boolean);

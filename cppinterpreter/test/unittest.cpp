@@ -33,6 +33,8 @@ atom_t* RunTest(atom_t* test)
 	atom_t* expr = Parse(string(exprStr));
 	atom_t* expected = Parse(string(expectedStr));
 
+	OutputDebugStringA(string(exprStr));
+	OutputDebugStringA("\n");
 	atom_t* result = Eval(expr, CreateGlobalEnvironment());
 
 	bool success = StructuralEquality(result, expected);
@@ -80,6 +82,9 @@ atom_t* RunTestsInDir(const char* const relativePath)
 			zstrcat(absolutePath, relativePath);
 			zstrcat(absolutePath, ffd.cFileName);
 
+			OutputDebugStringA("*** ");
+			OutputDebugStringA(ffd.cFileName);
+			OutputDebugStringA("\n");
 			result = cons(cons(new_string(ffd.cFileName), RunTestsInFile(absolutePath)), result);
 		}
 	}

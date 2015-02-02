@@ -54,3 +54,6 @@ switch to special nil symbol
 
 expose nil as symbol
 2359
+
+special type symbols, is, type builtins
+2562

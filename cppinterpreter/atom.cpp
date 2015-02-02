@@ -1,6 +1,14 @@
 #include "pch.h"
 
-atom_t *nil;
+atom_t *nil, *t;
+atom_t* sym_boolean;
+atom_t* sym_number;
+atom_t* sym_string;
+atom_t* sym_symbol;
+atom_t* sym_cons;
+atom_t* sym_lambda;
+atom_t* sym_macro;
+atom_t* sym_builtin;
 
 atom_t *new_atom(const atom_type_t type) {
 	atom_t *atom = new atom_t;

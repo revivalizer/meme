@@ -4,7 +4,9 @@ atom_t* Apply(atom_t* fn, atom_t* args);
 
 bool IsTrue(atom_t* expr)
 {
-	if (isboolean(expr))
+	if (no(expr))
+		return false;
+	else if (isboolean(expr))
 		return boolean(expr);
 	else if (isnumber(expr))
 		return number(expr)!=0.0;

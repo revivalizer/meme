@@ -4,3 +4,5 @@ atom_t* BuiltinCons(atom_t* args);
 atom_t* BuiltinCar(atom_t* args);
 atom_t* BuiltinCdr(atom_t* args);
 atom_t* BuiltinList(atom_t* args);
+atom_t* BuiltinType(atom_t* args);
+atom_t* BuiltinIs(atom_t* args);

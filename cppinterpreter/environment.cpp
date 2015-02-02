@@ -45,6 +45,8 @@ environment_t* CreateGlobalEnvironment()
 	define(globalEnv, new_symbol("car"),  new_builtin(BuiltinCar));
 	define(globalEnv, new_symbol("cdr"),  new_builtin(BuiltinCdr));
 	define(globalEnv, new_symbol("list"), new_builtin(BuiltinList));
+	define(globalEnv, new_symbol("type"), new_builtin(BuiltinType));
+	define(globalEnv, new_symbol("is"),   new_builtin(BuiltinIs));
 	define(globalEnv, new_symbol("nil"),  nil);
 
 	return globalEnv;	
