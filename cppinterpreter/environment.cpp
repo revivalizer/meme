@@ -39,6 +39,7 @@ environment_t* CreateGlobalEnvironment()
 	auto globalEnv = new environment_t(cons(nil, nil), nullptr);
 	globalEnv->global = globalEnv;
 
+	define(globalEnv, new_symbol("+"),    new_builtin(BuiltinSub));
 	define(globalEnv, new_symbol("-"),    new_builtin(BuiltinSub));
 	define(globalEnv, new_symbol("*"),    new_builtin(BuiltinMul));
 	define(globalEnv, new_symbol("cons"), new_builtin(BuiltinCons));

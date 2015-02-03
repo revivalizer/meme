@@ -24,6 +24,23 @@ atom_t* BuiltinSub(atom_t* args)
 	return new_number(res);
 }
 
+atom_t* BuiltinAdd(atom_t* args)
+{
+	if (no(args))
+		return new_number(0.0);
+
+	double res = 0.0;
+	auto nextArg = iter(args);
+
+	while (auto arg = nextArg())
+	{
+		ZASSERT(isnumber(arg))
+		res += number(arg);
+	}
+
+	return new_number(res);
+}
+
 atom_t* BuiltinMul(atom_t* args)
 {
 	double res = 1.0;

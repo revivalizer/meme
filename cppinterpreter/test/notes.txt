@@ -57,3 +57,6 @@ expose nil as symbol
 
 special type symbols, is, type builtins
 2562
+
+add plus operator
+2563
